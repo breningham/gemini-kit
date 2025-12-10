@@ -1,0 +1,64 @@
+{
+  "name": "gemini-kit",
+  "version": "0.1.0",
+  "description": "ClaudeKit-style AI Development Assistant with multi-model support (Gemini, Claude, OpenAI)",
+  "author": "hieu",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "gk": "./dist/cli/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "prepare": "pnpm build"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "gemini",
+    "claude",
+    "openai",
+    "development",
+    "assistant",
+    "agents",
+    "claudekit"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.20.0",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "@google/generative-ai": "^0.21.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "inquirer": "^12.0.0",
+    "openai": "^4.76.0",
+    "ora": "^8.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "eslint": "^9.16.0",
+    "prettier": "^3.4.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
