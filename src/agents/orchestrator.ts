@@ -1,162 +1,270 @@
 /**
- * Agent Orchestrator
- * Manages agent lifecycle and execution patterns
+ * Team Orchestrator
+ * Coordinates agents like a real development team
  */
 
 import { BaseAgent, AgentContext, AgentOutput } from './base-agent.js';
+import { TeamContextManager, initTeamContext, getTeamContext } from '../context/team-context.js';
+import { logger } from '../utils/logger.js';
 
 export type OrchestrationPattern = 'sequential' | 'parallel' | 'hybrid';
 
-export interface OrchestrationConfig {
-    pattern: OrchestrationPattern;
-    agents: string[];
-    parallelGroups?: string[][];
+export interface TeamWorkflow {
+    name: string;
+    description: string;
+    steps: WorkflowStep[];
 }
 
-export class AgentOrchestrator {
+export interface WorkflowStep {
+    agent: string;
+    action: string;
+    dependsOn?: string[];
+    optional?: boolean;
+}
+
+export class TeamOrchestrator {
     private agents: Map<string, BaseAgent> = new Map();
-    private context: AgentContext | null = null;
+    private teamContext: TeamContextManager | null = null;
 
     /**
-     * Register an agent
+     * Register an agent to the team
      */
     register(agent: BaseAgent): void {
         this.agents.set(agent.name, agent);
+        logger.info(`👤 ${agent.name} joined the team as ${agent.category}`);
     }
 
     /**
-     * Get registered agent by name
+     * Get agent by name
      */
     getAgent(name: string): BaseAgent | undefined {
         return this.agents.get(name);
     }
 
     /**
-     * List all registered agents
+     * List all team members
      */
-    listAgents(): string[] {
+    listTeam(): string[] {
         return Array.from(this.agents.keys());
     }
 
     /**
-     * Initialize context for orchestration
+     * Start a team session for a task
      */
-    initializeContext(projectRoot: string, task: string): void {
-        this.context = {
-            projectRoot,
-            currentTask: task,
-            sharedData: {},
-        };
+    startSession(projectRoot: string, task: string): TeamContextManager {
+        this.teamContext = initTeamContext(projectRoot, task);
+        logger.info(`\n🚀 Team Session Started: "${task}"\n`);
+        return this.teamContext;
     }
 
     /**
-     * Execute agents sequentially
-     * planner → code → tester → reviewer → git
+     * Get current team context
      */
-    async executeSequential(agentNames: string[]): Promise<AgentOutput[]> {
-        if (!this.context) {
-            throw new Error('Context not initialized');
+    getTeamContext(): TeamContextManager | null {
+        return this.teamContext || getTeamContext();
+    }
+
+    /**
+     * Execute a single agent with team context
+     */
+    async executeAgent(agentName: string, customTask?: string): Promise<AgentOutput> {
+        const agent = this.agents.get(agentName);
+        if (!agent) {
+            throw new Error(`Agent ${agentName} not found in team`);
         }
 
-        const results: AgentOutput[] = [];
-        let previousOutput: AgentOutput | undefined;
+        const teamCtx = this.getTeamContext();
+        if (!teamCtx) {
+            throw new Error('No active team session. Call startSession() first.');
+        }
 
-        for (const name of agentNames) {
-            const agent = this.agents.get(name);
+        // Agent joins the team
+        teamCtx.memberJoins(agent.name, agent.category);
+        teamCtx.memberUpdate(agent.name, 'starting work');
+
+        // Get context summary for agent
+        const contextSummary = teamCtx.getSummaryForAgent(agent.name);
+
+        // Create agent context with team info
+        const ctx: AgentContext = {
+            projectRoot: teamCtx.getFullContext().projectRoot,
+            currentTask: customTask || teamCtx.getFullContext().currentTask,
+            sharedData: {
+                teamContext: contextSummary,
+                relevantFiles: teamCtx.getFullContext().knowledge.codebaseInfo.relevantFiles,
+                previousFindings: teamCtx.getFullContext().knowledge.findings,
+            },
+        };
+
+        // Execute agent
+        logger.info(`🔧 ${agent.name} is working...`);
+        agent.initialize(ctx);
+        const result = await agent.execute();
+        agent.cleanup();
+
+        // Update team context with results
+        teamCtx.memberUpdate(agent.name, result.success ? 'completed' : 'failed');
+
+        // Share results with team
+        teamCtx.sendMessage(
+            agent.name,
+            'all',
+            'result',
+            result.message,
+            result.data
+        );
+
+        // Add any artifacts
+        if (result.artifacts.length > 0) {
+            result.artifacts.forEach(path => {
+                teamCtx.addArtifact(path, {
+                    name: path,
+                    type: this.inferArtifactType(agent.name),
+                    createdBy: agent.name,
+                    path,
+                });
+            });
+        }
+
+        // Send handoff if there's a next agent
+        if (result.nextAgent) {
+            teamCtx.sendMessage(
+                agent.name,
+                result.nextAgent,
+                'handoff',
+                `Completed ${result.message}. Please continue.`,
+                result.data
+            );
+        }
+
+        return result;
+    }
+
+    /**
+     * Execute the full cook workflow (like standup + work)
+     */
+    async executeCookWorkflow(task: string): Promise<AgentOutput[]> {
+        const projectRoot = process.cwd();
+        this.startSession(projectRoot, task);
+
+        const workflow: WorkflowStep[] = [
+            { agent: 'planner', action: 'Create implementation plan' },
+            { agent: 'scout', action: 'Find relevant files' },
+            { agent: 'coder', action: 'Implement the solution', optional: true },
+            { agent: 'tester', action: 'Validate the implementation' },
+            { agent: 'code-reviewer', action: 'Review code quality' },
+            { agent: 'docs-manager', action: 'Update documentation', optional: true },
+            { agent: 'git-manager', action: 'Commit changes', optional: true },
+        ];
+
+        const results: AgentOutput[] = [];
+        const teamCtx = this.getTeamContext()!;
+
+        logger.info('📋 Workflow Steps:');
+        workflow.forEach((step, i) => {
+            logger.info(`   ${i + 1}. ${step.agent}: ${step.action}`);
+        });
+        logger.info('');
+
+        for (const step of workflow) {
+            const agent = this.agents.get(step.agent);
+
             if (!agent) {
-                console.warn(`Agent ${name} not found, skipping...`);
+                if (!step.optional) {
+                    logger.warn(`⚠️ Required agent ${step.agent} not available, skipping...`);
+                }
                 continue;
             }
 
-            // Update context with previous output
-            const ctx: AgentContext = {
-                ...this.context,
-                previousAgentOutput: previousOutput,
-            };
+            try {
+                // Announce what we're doing
+                teamCtx.sendMessage(
+                    'orchestrator',
+                    step.agent,
+                    'request',
+                    step.action
+                );
 
-            agent.initialize(ctx);
-            const output = await agent.execute();
-            agent.cleanup();
+                const result = await this.executeAgent(step.agent);
+                results.push(result);
 
-            results.push(output);
-            previousOutput = output;
+                // Update progress
+                this.updateProgressFromAgent(step.agent, result.success);
 
-            // Stop if agent failed
-            if (!output.success) {
-                console.error(`Agent ${name} failed:`, output.message);
-                break;
+                if (!result.success && !step.optional) {
+                    logger.error(`❌ ${step.agent} failed: ${result.message}`);
+                    teamCtx.sendMessage(
+                        step.agent,
+                        'all',
+                        'info',
+                        `⚠️ Workflow stopped: ${result.message}`
+                    );
+                    break;
+                }
+
+                logger.success(`✅ ${step.agent}: ${result.message}`);
+
+            } catch (error) {
+                logger.error(`❌ ${step.agent} error: ${error}`);
+                if (!step.optional) break;
             }
         }
+
+        // Final summary
+        logger.info('\n📊 Team Session Complete');
+        logger.info(`   Tasks completed: ${results.filter(r => r.success).length}/${results.length}`);
 
         return results;
     }
 
     /**
-     * Execute agents in parallel
-     * scout (dir1) + scout (dir2) + scout (dir3) → aggregate
+     * Execute agents in parallel (e.g., multiple scouts)
      */
     async executeParallel(agentNames: string[]): Promise<AgentOutput[]> {
-        if (!this.context) {
-            throw new Error('Context not initialized');
-        }
-
-        const promises = agentNames.map(async (name) => {
-            const agent = this.agents.get(name);
-            if (!agent) {
-                return {
-                    success: false,
-                    agentName: name,
-                    message: `Agent ${name} not found`,
-                    data: {},
-                    artifacts: [],
-                };
-            }
-
-            agent.initialize(this.context!);
-            const output = await agent.execute();
-            agent.cleanup();
-            return output;
-        });
-
+        const promises = agentNames.map(name => this.executeAgent(name));
         return Promise.all(promises);
     }
 
     /**
-     * Execute hybrid pattern
-     * Parallel scouts → Sequential planning → Parallel implementation
+     * Update progress tracking based on which agent completed
      */
-    async executeHybrid(config: OrchestrationConfig): Promise<AgentOutput[]> {
-        const results: AgentOutput[] = [];
+    private updateProgressFromAgent(agentName: string, success: boolean): void {
+        const teamCtx = this.getTeamContext();
+        if (!teamCtx || !success) return;
 
-        if (config.parallelGroups) {
-            for (const group of config.parallelGroups) {
-                const groupResults = await this.executeParallel(group);
-                results.push(...groupResults);
-            }
+        const progressMap: Record<string, keyof TeamContextManager extends never ? never : 'planned' | 'implemented' | 'tested' | 'reviewed' | 'documented'> = {
+            'planner': 'planned',
+            'coder': 'implemented',
+            'tester': 'tested',
+            'code-reviewer': 'reviewed',
+            'docs-manager': 'documented',
+        };
+
+        const step = progressMap[agentName];
+        if (step) {
+            teamCtx.updateProgress(step as 'planned' | 'implemented' | 'tested' | 'reviewed' | 'documented', true);
         }
-
-        return results;
     }
 
     /**
-     * Execute the standard ClaudeKit workflow
-     * /cook triggers: planner → code → tester → reviewer → docs → git
+     * Infer artifact type from agent name
      */
-    async executeCookWorkflow(task: string): Promise<AgentOutput[]> {
-        const workflow = [
-            'planner',
-            'scout',
-            'coder',
-            'tester',
-            'code-reviewer',
-            'docs-manager',
-            'git-manager',
-        ];
-
-        this.initializeContext(process.cwd(), task);
-        return this.executeSequential(workflow);
+    private inferArtifactType(agentName: string): 'plan' | 'code' | 'test' | 'doc' | 'analysis' {
+        const typeMap: Record<string, 'plan' | 'code' | 'test' | 'doc' | 'analysis'> = {
+            'planner': 'plan',
+            'coder': 'code',
+            'tester': 'test',
+            'docs-manager': 'doc',
+            'scout': 'analysis',
+            'debugger': 'analysis',
+            'researcher': 'analysis',
+        };
+        return typeMap[agentName] || 'analysis';
     }
 }
 
 // Singleton instance
-export const orchestrator = new AgentOrchestrator();
+export const teamOrchestrator = new TeamOrchestrator();
+
+// Re-export old orchestrator for backward compatibility
+export { teamOrchestrator as orchestrator };

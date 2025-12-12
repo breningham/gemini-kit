@@ -27,8 +27,8 @@ export async function cookCommand(task: string): Promise<void> {
     orchestrator.register(docsManagerAgent);
     orchestrator.register(gitManagerAgent);
 
-    // Initialize context
-    orchestrator.initializeContext(process.cwd(), task);
+    // Initialize team session
+    orchestrator.startSession(process.cwd(), task);
 
     // Step 1: Planner
     const spinner = ora('Step 1/6: Planning...').start();
