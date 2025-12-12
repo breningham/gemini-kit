@@ -24,6 +24,8 @@ import { researchDeepCommand, researchQuickCommand } from '../commands/research.
 import { fixFastCommand, fixHardCommand, fixTypesCommand, fixTestCommand, fixUiCommand, fixCiCommand, fixLogsCommand } from '../commands/fix.js';
 import { bootstrapCommand } from '../commands/bootstrap.js';
 import { codeCommand } from '../commands/code.js';
+import { codeReviewCommand } from '../commands/code-review.js';
+import { dbQueryCommand, dbOptimizeCommand, dbSchemaCommand } from '../commands/db.js';
 
 const program = new Command();
 
@@ -33,99 +35,65 @@ program
     .version('0.1.0');
 
 // Core workflow commands
-program
-    .command('cook <task>')
-    .description('All-in-one development workflow (planner → scout → code → test → review → docs → git)')
-    .action(cookCommand);
+program.command('cook <task>').description('All-in-one workflow (planner → coder → tester → reviewer → git)').action(cookCommand);
+program.command('bootstrap <project-name>').description('Generate new project').option('-t, --template <template>', 'Template').action((n, o) => bootstrapCommand(n, o.template));
+program.command('plan <feature>').description('Create implementation plan').action(planCommand);
+program.command('code <plan-path>').description('Generate code from plan (e.g., gk code @plans/feature.md)').action(codeCommand);
+program.command('code-review [file]').description('Code review (invokes: code-reviewer agent)').action(codeReviewCommand);
+program.command('scout <query>').description('Search codebase').action(scoutCommand);
+program.command('init').description('Initialize gemini-kit').action(initCommand);
+program.command('test').description('Run tests').action(testCommand);
+program.command('debug <issue>').description('Debug an issue').action(debugCommand);
 
-program
-    .command('bootstrap <project-name>')
-    .description('Generate new project (researcher → planner → coder → tester)')
-    .option('-t, --template <template>', 'Project template')
-    .action((name, options) => bootstrapCommand(name, options.template));
-
-program
-    .command('plan <feature>')
-    .description('Create implementation plan (invokes: planner + researcher)')
-    .action(planCommand);
-
-program
-    .command('code <plan-path>')
-    .description('Generate code from plan file (e.g., gk code @plans/feature.md)')
-    .action(codeCommand);
-
-program
-    .command('scout <query>')
-    .description('Search codebase for relevant files')
-    .action(scoutCommand);
-
-program
-    .command('init')
-    .description('Initialize gemini-kit in current project')
-    .action(initCommand);
-
-program
-    .command('test')
-    .description('Run tests (invokes: tester agent)')
-    .action(testCommand);
-
-program
-    .command('debug <issue>')
-    .description('Debug an issue (invokes: debugger agent)')
-    .action(debugCommand);
-
-// Fix commands
+// Fix commands (7)
 const fix = program.command('fix').description('Fix issues');
+fix.command('fast').description('Quick fixes (lint/format)').action(fixFastCommand);
+fix.command('hard <issue>').description('Complex investigation').action(fixHardCommand);
+fix.command('types').description('TypeScript errors').action(fixTypesCommand);
+fix.command('test').description('Failing tests').action(fixTestCommand);
+fix.command('ui <component>').description('UI issues').action(fixUiCommand);
+fix.command('ci').description('CI/CD issues').action(fixCiCommand);
+fix.command('logs [file]').description('Log analysis').action(fixLogsCommand);
 
-fix.command('fast').description('Quick fixes (linting, formatting)').action(fixFastCommand);
-fix.command('hard <issue>').description('Complex investigation and fix').action(fixHardCommand);
-fix.command('types').description('Fix TypeScript errors').action(fixTypesCommand);
-fix.command('test').description('Fix failing tests').action(fixTestCommand);
-fix.command('ui <component>').description('Fix UI issues').action(fixUiCommand);
-fix.command('ci').description('Fix CI/CD issues').action(fixCiCommand);
-fix.command('logs [file]').description('Analyze logs for errors').action(fixLogsCommand);
-
-// Git commands
-const git = program.command('git').description('Git operations (invokes: git-manager agent)');
-
-git.command('cm').description('Stage and commit with AI-generated message').action(gitCommitCommand);
+// Git commands (3)
+const git = program.command('git').description('Git operations');
+git.command('cm').description('Commit with AI message').action(gitCommitCommand);
 git.command('cp').description('Commit and push').action(gitCommitPushCommand);
-git.command('pr <branch>').description('Create pull request').action(async (branch: string) => {
-    console.log(chalk.cyan('🔀 /git:pr'), branch);
-    console.log(chalk.gray('TODO: Implement PR creation'));
-});
+git.command('pr <branch>').description('Create PR').action(async (b: string) => console.log(chalk.cyan('🔀 git:pr'), b));
 
-// Docs commands
-const docs = program.command('docs').description('Documentation (invokes: docs-manager agent)');
+// Docs commands (2)
+const docs = program.command('docs').description('Documentation');
+docs.command('init').description('Initialize docs').action(docsInitCommand);
+docs.command('update').description('Update docs').action(docsUpdateCommand);
 
-docs.command('init').description('Initialize documentation structure').action(docsInitCommand);
-docs.command('update').description('Update documentation').action(docsUpdateCommand);
+// Design commands (3)
+const design = program.command('design').description('Design operations');
+design.command('fast <description>').description('Quick mockups').action(designFastCommand);
+design.command('good <description>').description('Premium designs').action(designGoodCommand);
+design.command('3d <description>').description('Three.js scenes').action(design3dCommand);
 
-// Design commands
-const design = program.command('design').description('Design operations (invokes: ui-ux-designer agent)');
+// Content commands (2)
+const content = program.command('content').description('Content creation');
+content.command('good <description>').description('Quality content').action(contentGoodCommand);
+content.command('cro <description>').description('CRO copy').action(contentCroCommand);
 
-design.command('fast <description>').description('Quick UI mockups').action(designFastCommand);
-design.command('good <description>').description('Premium designs with full spec').action(designGoodCommand);
-design.command('3d <description>').description('Three.js 3D scenes').action(design3dCommand);
+// Research commands (2)
+const research = program.command('research').description('Technical research');
+research.command('deep <topic>').description('Deep research').action(researchDeepCommand);
+research.command('quick <topic>').description('Quick overview').action(researchQuickCommand);
 
-// Content commands
-const content = program.command('content').description('Content creation (invokes: copywriter agent)');
-
-content.command('good <description>').description('Create high-quality content').action(contentGoodCommand);
-content.command('cro <description>').description('Create CRO-optimized conversion content').action(contentCroCommand);
-
-// Research commands
-const research = program.command('research').description('Technical research (invokes: researcher agent)');
-
-research.command('deep <topic>').description('Deep multi-phase research with saved output').action(researchDeepCommand);
-research.command('quick <topic>').description('Quick research overview').action(researchQuickCommand);
+// Database commands (3)
+const db = program.command('db').description('Database operations (invokes: database-admin agent)');
+db.command('query <sql>').description('Analyze SQL query').action(dbQueryCommand);
+db.command('optimize').description('Database optimization').action(dbOptimizeCommand);
+db.command('schema').description('Schema analysis').action(dbSchemaCommand);
 
 // Other commands
-program.command('brainstorm <topic>').description('Explore ideas (invokes: brainstormer agent)').action(brainstormCommand);
-program.command('journal').description('Write development journal (invokes: journal-writer agent)').action(journalCommand);
-program.command('watzup').description('Project status overview (invokes: project-manager agent)').action(watzupCommand);
+program.command('brainstorm <topic>').description('Explore ideas').action(brainstormCommand);
+program.command('journal').description('Dev journal').action(journalCommand);
+program.command('watzup').description('Project status').action(watzupCommand);
 
-// Show banner
+// Banner
 console.log(chalk.bold.cyan(`
 ╔═══════════════════════════════════════════╗
 ║           Gemini-Kit v0.1.0               ║
