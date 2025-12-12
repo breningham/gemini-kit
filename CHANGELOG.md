@@ -23,6 +23,12 @@ All notable changes to Gemini-Kit will be documented in this file.
   - Max 2 retries per agent
   - Automatic in cook workflow
 
+- **Session Memory** - Agents remember context between sessions
+  - `loadProjectContext()` - reads README, package.json
+  - `resumeSession()` - auto-loads previous context
+  - `endSession()` - saves context and summary
+  - Previous session info injected to agent prompts
+
 - **CLIProxyAPI Support** - Multi-model access via proxy
   - Support for custom baseURL
   - Access Gemini, Claude, OpenAI via proxy
@@ -32,6 +38,7 @@ All notable changes to Gemini-Kit will be documented in this file.
 - Git manager generates context-aware commit messages
 - Code reviewer uses relevant files from scout
 - Docs manager documents team progress
+- Build size: 141KB
 
 ## [0.1.0] - 2024-12-12
 
