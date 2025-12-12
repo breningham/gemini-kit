@@ -1,31 +1,66 @@
 /**
  * Docs Commands
- * Invokes docs-manager agent
+ * Invokes docs-manager agent with Project Context
  */
 
 import chalk from 'chalk';
 import ora from 'ora';
 import { docsManagerAgent } from '../agents/documentation/docs-manager.js';
-import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 'fs';
+import { projectContext } from '../context/project-context.js';
+import { existsSync, writeFileSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { providerManager } from '../providers/index.js';
 
 export async function docsInitCommand(): Promise<void> {
-    console.log(chalk.cyan.bold('\n📚 Initializing Documentation...\n'));
-    const docsDir = join(process.cwd(), 'docs');
-    if (!existsSync(docsDir)) mkdirSync(docsDir, { recursive: true });
+    console.log(chalk.cyan.bold('\n📚 Initializing Documentation (ClaudeKit Style)...\n'));
 
-    const files = [
-        { name: 'README.md', content: '# Documentation\n\n## Overview\n\n## Getting Started\n\n## Architecture\n\n## API Reference\n' },
-        { name: 'code-standards.md', content: '# Code Standards\n\n## Naming\n- camelCase for variables\n- PascalCase for types\n\n## Best Practices\n- Write tests\n- Document APIs\n' },
-    ];
+    const spinner = ora('Scanning project...').start();
 
-    for (const file of files) {
-        const path = join(docsDir, file.name);
-        if (!existsSync(path)) { writeFileSync(path, file.content); console.log(chalk.green(`  ✓ Created ${file.name}`)); }
-        else { console.log(chalk.gray(`  ⊘ ${file.name} exists`)); }
+    try {
+        // Use ProjectContextManager to scan and generate summary
+        const context = await projectContext.init(process.cwd());
+        spinner.text = `Found ${context.files.length} code files. Generating summary...`;
+
+        // Generate AI summary
+        await projectContext.generateSummary();
+        spinner.text = 'Creating docs...';
+
+        // Save to docs folder
+        const summaryPath = await projectContext.saveDocsInit();
+
+        // Also create code-standards.md if not exists
+        const docsDir = join(process.cwd(), 'docs');
+        const standardsPath = join(docsDir, 'code-standards.md');
+        if (!existsSync(standardsPath)) {
+            writeFileSync(standardsPath, `# Code Standards
+
+## Naming Conventions
+- camelCase for variables and functions
+- PascalCase for classes and types
+- UPPER_CASE for constants
+
+## Best Practices
+- Write tests for all new features
+- Document public APIs
+- Use TypeScript strict mode
+- Follow ESLint rules
+
+## Git Commits
+- Use conventional commits: feat, fix, docs, chore
+- Keep commits small and focused
+`);
+            console.log(chalk.green('  ✓ Created code-standards.md'));
+        }
+
+        spinner.succeed('Documentation initialized!');
+        console.log(chalk.gray(`\n  📁 Files: ${context.files.length}`));
+        console.log(chalk.gray(`  📦 Framework: ${context.framework}`));
+        console.log(chalk.green(`  📝 Summary: ${summaryPath}\n`));
+
+        console.log(chalk.cyan('💡 Tip: Agents will now use this context for better understanding.\n'));
+    } catch (error) {
+        spinner.fail(`Failed: ${error}`);
     }
-    console.log(chalk.green.bold('\n✅ Documentation initialized!\n'));
 }
 
 export async function docsUpdateCommand(): Promise<void> {

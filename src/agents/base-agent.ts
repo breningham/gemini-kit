@@ -1,7 +1,10 @@
 /**
  * Base Agent Class
- * All 14 specialized agents extend this class
+ * All 15 specialized agents extend this class
+ * NOW includes Project Context injection like ClaudeKit
  */
+
+import { projectContext } from '../context/project-context.js';
 
 export interface AgentContext {
     projectRoot: string;
@@ -80,6 +83,26 @@ export abstract class BaseAgent {
             throw new Error(`Agent ${this.name} not initialized`);
         }
         return this.context;
+    }
+
+    /**
+     * Get project context for prompts (like ClaudeKit)
+     * Returns summary of project structure, files, and dependencies
+     */
+    protected getProjectContext(): string {
+        try {
+            const ctx = projectContext.getContext();
+            if (ctx) {
+                return projectContext.getContextForPrompt();
+            }
+            // Try to load from docs if available
+            if (this.context && projectContext.loadFromDocs(this.context.projectRoot)) {
+                return projectContext.getContextForPrompt();
+            }
+            return '';
+        } catch {
+            return '';
+        }
     }
 
     /**
