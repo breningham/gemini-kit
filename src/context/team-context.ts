@@ -147,6 +147,13 @@ export class TeamContextManager {
     }
 
     /**
+     * Get messages FROM a specific agent
+     */
+    getMessagesFrom(agentName: string): TeamMessage[] {
+        return this.context.messageLog.filter(m => m.from === agentName);
+    }
+
+    /**
      * Get latest handoff message (who should I pick up from?)
      */
     getLastHandoff(): TeamMessage | undefined {

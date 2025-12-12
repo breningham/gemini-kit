@@ -1,20 +1,30 @@
 /**
  * Code Reviewer Agent
- * Comprehensive code review and quality assessment
- * Acts as Senior Code Reviewer - receives context from team
+ * Comprehensive code review with ESLint AUTO-FIX
+ * NOW runs ESLint --fix and provides AI review
  */
 
 import { BaseAgent, AgentOutput } from '../base-agent.js';
 import { getTeamContext } from '../../context/team-context.js';
 import { providerManager } from '../../providers/index.js';
 import { logger } from '../../utils/logger.js';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { execSync } from 'child_process';
+
+interface LintIssue {
+    file: string;
+    line: number;
+    column: number;
+    severity: 'error' | 'warning';
+    message: string;
+    ruleId: string;
+}
 
 export class CodeReviewerAgent extends BaseAgent {
     constructor() {
         super({
             name: 'code-reviewer',
-            description: 'Comprehensive code review and quality assessment',
+            description: 'Comprehensive code review with ESLint auto-fix',
             category: 'quality',
         });
     }
@@ -26,10 +36,9 @@ export class CodeReviewerAgent extends BaseAgent {
         logger.agent(this.name, 'Reviewing code...');
 
         try {
-            // Get files from team context or previous agent
+            // Get files from team context
             let filesToReview: string[] = ctx.previousAgentOutput?.artifacts ?? [];
 
-            // Also check team context for relevant files
             if (teamCtx) {
                 const teamFiles = teamCtx.getFullContext().knowledge.codebaseInfo.relevantFiles;
                 if (teamFiles.length > 0 && filesToReview.length === 0) {
@@ -37,7 +46,6 @@ export class CodeReviewerAgent extends BaseAgent {
                     logger.info(`📁 Using ${teamFiles.length} files from Scout`);
                 }
 
-                // Check team progress
                 const progress = teamCtx.getFullContext().knowledge.taskProgress;
                 if (progress.tested) {
                     logger.info(`✅ Tests have passed - proceeding with review`);
@@ -53,35 +61,38 @@ export class CodeReviewerAgent extends BaseAgent {
                 return this.createOutput(true, 'No files to review', {}, [], 'docs-manager');
             }
 
+            // Step 1: Run ESLint with auto-fix
+            const lintResult = await this.runEslintFix(ctx.projectRoot, filesToReview);
+
+            // Step 2: AI review remaining issues and code quality
             const reviews: Array<{ file: string; review: string; score?: number }> = [];
 
             for (const file of filesToReview.slice(0, 5)) {
                 try {
+                    if (!existsSync(file)) continue;
+
                     const content = readFileSync(file, 'utf-8');
+                    const fileIssues = lintResult.issues.filter(i => i.file.includes(file.split('/').pop()!));
 
                     const prompt = `You are a senior code reviewer. Review the following code:
 
 File: ${file}
 \`\`\`
-${content.slice(0, 5000)}
+${content.slice(0, 4000)}
 \`\`\`
 
-Provide:
+${fileIssues.length > 0 ? `ESLint Issues:\n${fileIssues.map(i => `- L${i.line}: ${i.message} (${i.ruleId})`).join('\n')}` : 'ESLint: Clean ✅'}
+
+Provide brief review:
 1. **Quality Score** (1-10)
 2. **Security Issues** (if any)
-3. **Performance Concerns** (if any) 
-4. **Best Practice Violations**
-5. **Actionable Improvements** (specific suggestions)
+3. **Top 3 Improvements**
 
-Be concise and actionable.`;
+Be concise - max 200 words.`;
 
-                    const result = await providerManager.generate([
-                        { role: 'user', content: prompt },
-                    ]);
-
-                    // Try to extract score
-                    const scoreMatch = result.content.match(/(\d+)\s*\/?\s*10/);
-                    const score = scoreMatch && scoreMatch[1] ? parseInt(scoreMatch[1], 10) : undefined;
+                    const result = await providerManager.generate([{ role: 'user', content: prompt }]);
+                    const scoreMatch = result.content.match(/(\d+)\s*\/?10/);
+                    const score = scoreMatch?.[1] ? parseInt(scoreMatch[1], 10) : undefined;
 
                     reviews.push({ file, review: result.content, score });
                 } catch {
@@ -91,11 +102,10 @@ Be concise and actionable.`;
 
             logger.success(`Reviewed ${reviews.length} files`);
 
-            // Share with team
+            // Report to team
             if (teamCtx) {
                 teamCtx.updateProgress('reviewed', true);
 
-                // Calculate average score
                 const scores = reviews.filter(r => r.score).map(r => r.score!);
                 const avgScore = scores.length > 0
                     ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
@@ -105,34 +115,39 @@ Be concise and actionable.`;
                     this.name,
                     'all',
                     'result',
-                    `📋 Reviewed ${reviews.length} files. Average score: ${avgScore}/10`,
-                    { reviewCount: reviews.length, averageScore: avgScore }
+                    `📋 Reviewed ${reviews.length} files. Score: ${avgScore}/10. ESLint fixed ${lintResult.fixedCount} issues.`,
+                    { reviewCount: reviews.length, averageScore: avgScore, eslintFixed: lintResult.fixedCount }
                 );
 
-                // Add as artifact
                 teamCtx.addArtifact('code-review', {
                     name: 'code-review-results',
                     type: 'analysis',
                     createdBy: this.name,
-                    content: JSON.stringify(reviews.map(r => ({ file: r.file, score: r.score })), null, 2),
+                    content: JSON.stringify({
+                        reviews: reviews.map(r => ({ file: r.file, score: r.score })),
+                        eslint: { fixed: lintResult.fixedCount, remaining: lintResult.issues.length }
+                    }, null, 2),
                 });
 
-                // Handoff to docs
                 teamCtx.sendMessage(
                     this.name,
                     'docs-manager',
                     'handoff',
-                    `Code review complete. Please update documentation.`,
+                    `Code review complete. Fixed ${lintResult.fixedCount} ESLint issues.`,
                     { reviewComplete: true, filesReviewed: reviews.length }
                 );
 
-                teamCtx.addFinding('codeReview', { reviews, averageScore: avgScore });
+                teamCtx.addFinding('codeReview', {
+                    reviews,
+                    averageScore: avgScore,
+                    eslint: lintResult
+                });
             }
 
             return this.createOutput(
                 true,
-                `Reviewed ${reviews.length} files`,
-                { reviews },
+                `Reviewed ${reviews.length} files. ESLint fixed ${lintResult.fixedCount} issues.`,
+                { reviews, lintResult },
                 [],
                 'docs-manager'
             );
@@ -145,6 +160,83 @@ Be concise and actionable.`;
 
             return this.createOutput(false, `Review failed: ${message}`, {});
         }
+    }
+
+    /**
+     * Run ESLint with auto-fix on files
+     */
+    private async runEslintFix(projectRoot: string, files: string[]): Promise<{
+        fixedCount: number;
+        issues: LintIssue[];
+    }> {
+        const issues: LintIssue[] = [];
+        let fixedCount = 0;
+
+        try {
+            // Check if ESLint is available
+            const hasEslint = existsSync(`${projectRoot}/node_modules/.bin/eslint`) ||
+                existsSync(`${projectRoot}/eslint.config.js`) ||
+                existsSync(`${projectRoot}/.eslintrc.js`);
+
+            if (!hasEslint) {
+                logger.info('ESLint not configured - skipping auto-fix');
+                return { fixedCount: 0, issues: [] };
+            }
+
+            // Filter to only TypeScript/JavaScript files
+            const lintableFiles = files.filter(f =>
+                f.endsWith('.ts') || f.endsWith('.tsx') ||
+                f.endsWith('.js') || f.endsWith('.jsx')
+            ).slice(0, 10);
+
+            if (lintableFiles.length === 0) {
+                return { fixedCount: 0, issues: [] };
+            }
+
+            // Run ESLint with --fix
+            try {
+                execSync(`npx eslint --fix ${lintableFiles.join(' ')} 2>/dev/null`, {
+                    cwd: projectRoot,
+                    encoding: 'utf-8',
+                    timeout: 60000,
+                });
+                logger.success('ESLint auto-fix applied');
+            } catch {
+                // ESLint may exit with error if issues remain - that's OK
+            }
+
+            // Get remaining issues in JSON format
+            try {
+                const output = execSync(
+                    `npx eslint --format json ${lintableFiles.join(' ')} 2>/dev/null || true`,
+                    { cwd: projectRoot, encoding: 'utf-8', timeout: 60000 }
+                );
+
+                const results = JSON.parse(output || '[]');
+                for (const result of results) {
+                    if (result.messages) {
+                        for (const msg of result.messages) {
+                            issues.push({
+                                file: result.filePath,
+                                line: msg.line || 0,
+                                column: msg.column || 0,
+                                severity: msg.severity === 2 ? 'error' : 'warning',
+                                message: msg.message,
+                                ruleId: msg.ruleId || 'unknown',
+                            });
+                        }
+                    }
+                    fixedCount += result.fixableErrorCount || 0;
+                    fixedCount += result.fixableWarningCount || 0;
+                }
+            } catch {
+                // JSON parsing failed - ESLint might not be properly configured
+            }
+        } catch (error) {
+            logger.warn(`ESLint check failed: ${error}`);
+        }
+
+        return { fixedCount, issues };
     }
 }
 

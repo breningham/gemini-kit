@@ -1,27 +1,43 @@
 # Gemini-Kit Tasks
 
-## 📊 Current Status: v0.2.2
+## 📊 Current Status: v0.3.0
 
 | Component | Count | Status |
 |-----------|-------|--------|
-| Agents | 15 | ✅ 100% with Team Context |
+| Agents | 15 | ✅ 100% with Real Skills |
 | Commands | 43+ | ✅ Complete |
 | Multi-model | 4 | ✅ Gemini, Claude, OpenAI, CLIProxyAPI |
 | Tests | 9 | ✅ All passing |
-| Build | 148KB | ✅ |
+| Build | 163KB | ✅ |
 
 ---
 
-## ✅ All 15 Agents (with Team Context)
+## ✅ Agent Skills Upgrade Complete!
 
-| Category | Agents | Team Context |
-|----------|--------|--------------|
-| Development | planner, scout, coder, debugger | ✅ All |
-| Quality | tester, code-reviewer | ✅ All |
-| DevOps | git-manager, database-admin | ✅ All |
-| Documentation | docs-manager, project-manager | ✅ All |
-| Creative | brainstormer, ui-ux-designer, copywriter | ✅ All |
-| Research | researcher, journal-writer | ✅ All |
+### Phase 1: Core Skills ✅
+- [x] **Tester**: Test Generation - auto-generate Vitest tests
+- [x] **Debugger**: Auto-Fix - apply SEARCH/REPLACE fixes automatically
+
+### Phase 2: Enhanced Skills ✅
+- [x] **Scout**: Content Search + Symbol Extraction
+- [x] **Code-Reviewer**: ESLint --fix Integration
+
+### Phase 3: Advanced Skills ✅
+- [x] **Git-Manager**: Branch creation + improved push
+- [x] **Docs-Manager**: Auto-update README capability
+
+---
+
+## ✅ All 15 Agents (with Team Context + Skills)
+
+| Category | Agents | Skills |
+|----------|--------|--------|
+| Development | planner, scout, coder, debugger | ✅ Content search, Auto-fix |
+| Quality | tester, code-reviewer | ✅ Test gen, ESLint |
+| DevOps | git-manager, database-admin | ✅ Branch creation |
+| Documentation | docs-manager, project-manager | ✅ README auto-update |
+| Creative | brainstormer, ui-ux-designer, copywriter | ✅ Team Context |
+| Research | researcher, journal-writer | ✅ Team Context |
 
 ---
 
@@ -51,7 +67,7 @@
 ### Database (3)
 - `gk db query` | `optimize` | `schema`
 
-### Session (5) ✨
+### Session (5)
 - `gk session list` | `save` | `load` | `info` | `delete`
 
 ### Other (4)
@@ -59,54 +75,11 @@
 
 ---
 
-## ✅ New Features (v0.2.0+)
+## 🔜 Next: Quality & Polish
 
-### Team Context Sharing
-- Messages (handoff, request, result, info)
-- Shared artifacts (plans, code, analysis, designs)
-- Shared knowledge (relevant files, findings)
-- Progress tracking (planned, tested, reviewed, documented)
-
-### Session Persistence
-- Save/load sessions to `.gemini-kit/sessions/`
-- Resume work across restarts
-
-### Auto-Retry Loop
-- Tester fails → Debugger analyzes → Retry Tester
-- Max 2 retries per agent
-
-### Session Memory ✨ NEW
-- Auto-load previous session context
-- Project context (README, package.json) injected
-- Previous session summary available to agents
-- `resumeSession()`, `endSession()` in orchestrator
-
-### Coder File Writing ✨ NEW (v0.2.2)
-- extractCodeBlocks() với 4 regex patterns
-- writeFiles() tự động tạo files từ AI response
-- Cook workflow Step 3 runs coder agent
-
-### CLI Proxy API Integration ✨ NEW (v0.2.2)
-- Custom User-Agent header bypass Cloudflare
-- baseURL requires `/v1` suffix
-- Supports gemini-2.5-flash, gemini-2.5-pro, gemini-3-pro-preview
-
----
-
-## 🔜 Next: Skills Upgrade
-
-### Phase 1 (Priority High)
-- [x] **Coder**: File Writing - auto write to files ✅
-- [ ] **Tester**: Test Generation - auto create tests
-- [ ] **Debugger**: Auto-Fix - auto fix simple errors
-
-### Phase 2 (Priority Medium)
-- [ ] **Scout**: Code Search - AST parsing
-- [ ] **Code-Reviewer**: Lint Integration - ESLint
-
-### Phase 3 (Priority Low)
-- [ ] **Git-Manager**: Branch + PR creation
-- [ ] **npm publish**
+- [ ] Add more unit tests for new agent skills
+- [ ] npm publish preparation
+- [ ] Dashboard UI improvements
 
 ---
 

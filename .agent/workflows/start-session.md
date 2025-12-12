@@ -12,7 +12,8 @@ Trước khi làm bất cứ điều gì, PHẢI đọc các file sau theo thứ
 1. view_file /Users/hieu/Dev/gemini-kit/WORKFLOW.md
 2. view_file /Users/hieu/Dev/gemini-kit/SESSION_LOG.md (xem phần cuối - session mới nhất)
 3. view_file /Users/hieu/Dev/gemini-kit/TASKS.md
-4. view_file /Users/hieu/Dev/gemini-kit/CLAUDE.md
+4. view_file /Users/hieu/Dev/gemini-kit/IMPLEMENTATION_PLAN.md
+5. view_file /Users/hieu/Dev/gemini-kit/CLAUDE.md
 ```
 
 ## Bước 2: XÁC NHẬN ĐÃ ĐỌC

@@ -1,13 +1,13 @@
 /**
  * Docs Manager Agent
- * Manage technical documentation and standards
- * Acts as Tech Writer - documents team progress
+ * Manage technical documentation - AUTO-UPDATES README and CHANGELOG
+ * NOW can update project README with new features
  */
 
 import { BaseAgent, AgentOutput } from '../base-agent.js';
 import { getTeamContext } from '../../context/team-context.js';
 import { providerManager } from '../../providers/index.js';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../../utils/logger.js';
 
@@ -15,7 +15,7 @@ export class DocsManagerAgent extends BaseAgent {
     constructor() {
         super({
             name: 'docs-manager',
-            description: 'Manage technical documentation and standards',
+            description: 'Auto-update README, CHANGELOG, and technical docs',
             category: 'documentation',
         });
     }
@@ -32,20 +32,19 @@ export class DocsManagerAgent extends BaseAgent {
                 mkdirSync(docsDir, { recursive: true });
             }
 
-            // Gather team context for better docs
+            // Gather team context
             let teamSummary = '';
             let artifacts: string[] = [];
+            let newFeatures: string[] = [];
 
             if (teamCtx) {
                 const fullCtx = teamCtx.getFullContext();
                 const progress = fullCtx.knowledge.taskProgress;
 
-                // Get team artifacts
                 artifacts = Array.from(fullCtx.artifacts.values())
                     .map(a => `- **${a.name}** (${a.type}) by ${a.createdBy}`)
                     .slice(0, 10);
 
-                // Get key findings
                 const findings = fullCtx.knowledge.findings;
 
                 teamSummary = `
@@ -62,44 +61,23 @@ ${Object.entries(findings).slice(0, 5).map(([k, v]) =>
                     `- **${k}**: ${typeof v === 'object' ? JSON.stringify(v).slice(0, 100) : v}`
                 ).join('\n')}
 `;
+                // Extract new features from task
+                if (ctx.currentTask.toLowerCase().includes('add') ||
+                    ctx.currentTask.toLowerCase().includes('create') ||
+                    ctx.currentTask.toLowerCase().includes('implement')) {
+                    newFeatures.push(ctx.currentTask);
+                }
             }
 
-            // Generate documentation
-            const prompt = `You are a technical writer. Generate a brief documentation update:
+            // Update CHANGELOG
+            const changelogPath = await this.updateChangelog(ctx.projectRoot, ctx.currentTask, teamSummary);
 
-## Task
-${ctx.currentTask}
+            // Check if README should be updated
+            let readmeUpdated = false;
+            if (newFeatures.length > 0 && newFeatures[0]) {
+                readmeUpdated = await this.updateReadme(ctx.projectRoot, newFeatures[0]);
+            }
 
-${teamSummary}
-
-## Previous Agent Results
-${JSON.stringify(ctx.previousAgentOutput?.data, null, 2).slice(0, 1500)}
-
-Provide a concise markdown section documenting:
-1. What was changed
-2. Key decisions made
-3. Any important notes
-
-Be brief and factual.`;
-
-            const result = await providerManager.generate([
-                { role: 'user', content: prompt },
-            ]);
-
-            // Update changelog
-            const changelogPath = join(docsDir, 'CHANGELOG.md');
-            const date = new Date().toISOString().split('T')[0];
-            const entry = `
-## ${date}
-
-### ${ctx.currentTask}
-
-${result.content}
-
----
-`;
-
-            writeFileSync(changelogPath, entry, { flag: 'a' });
             logger.success('Documentation updated');
 
             // Report to team
@@ -110,32 +88,31 @@ ${result.content}
                     this.name,
                     'all',
                     'result',
-                    `📝 Documentation updated: ${changelogPath}`,
-                    { changelogPath, date }
+                    `📝 Docs updated: CHANGELOG${readmeUpdated ? ', README' : ''}`,
+                    { changelogPath, readmeUpdated }
                 );
 
                 teamCtx.addArtifact('documentation', {
-                    name: 'changelog-entry',
+                    name: 'docs-update',
                     type: 'doc',
                     createdBy: this.name,
                     path: changelogPath,
-                    content: entry,
+                    content: `CHANGELOG updated${readmeUpdated ? ', README updated' : ''}`,
                 });
 
-                // Handoff to git
                 teamCtx.sendMessage(
                     this.name,
                     'git-manager',
                     'handoff',
                     'Documentation complete. Ready for commit.',
-                    { docsUpdated: true, changelogPath }
+                    { docsUpdated: true, changelogPath, readmeUpdated }
                 );
             }
 
             return this.createOutput(
                 true,
-                'Documentation updated',
-                { changelogPath },
+                `Documentation updated${readmeUpdated ? ' (README included)' : ''}`,
+                { changelogPath, readmeUpdated },
                 [changelogPath],
                 'git-manager'
             );
@@ -147,6 +124,89 @@ ${result.content}
             }
 
             return this.createOutput(false, `Docs update failed: ${message}`, {});
+        }
+    }
+
+    /**
+     * Update CHANGELOG.md with new entry
+     */
+    private async updateChangelog(projectRoot: string, task: string, teamSummary: string): Promise<string> {
+        const docsDir = join(projectRoot, 'docs');
+        const changelogPath = join(docsDir, 'CHANGELOG.md');
+        const date = new Date().toISOString().split('T')[0];
+
+        const prompt = `Generate a brief changelog entry for:
+
+Task: ${task}
+${teamSummary}
+
+Format:
+- **What changed**: Brief description
+- **Files affected**: List key files
+
+Be concise - max 50 words.`;
+
+        const result = await providerManager.generate([{ role: 'user', content: prompt }]);
+
+        const entry = `
+## ${date}
+
+### ${task}
+
+${result.content}
+
+---
+`;
+
+        writeFileSync(changelogPath, entry, { flag: 'a' });
+        return changelogPath;
+    }
+
+    /**
+     * Update README.md with new feature (if significant)
+     */
+    private async updateReadme(projectRoot: string, feature: string): Promise<boolean> {
+        const readmePath = join(projectRoot, 'README.md');
+
+        if (!existsSync(readmePath)) {
+            return false;
+        }
+
+        try {
+            const content = readFileSync(readmePath, 'utf-8');
+
+            // Only update if README is not too large and doesn't already mention this
+            if (content.length > 50000 || content.toLowerCase().includes(feature.toLowerCase().slice(0, 30))) {
+                return false;
+            }
+
+            // Find features section or similar
+            const featuresMatch = content.match(/##\s*(Features|New Features|What's New)[^\n]*\n/i);
+            if (!featuresMatch) {
+                return false; // No features section to update
+            }
+
+            const prompt = `Generate a single bullet point for README "Features" section:
+
+Feature: ${feature}
+
+Format: - **[Feature Name]** - Brief description (max 15 words)
+
+Return ONLY the bullet point, nothing else.`;
+
+            const result = await providerManager.generate([{ role: 'user', content: prompt }]);
+            const bulletPoint = result.content.trim().split('\n')[0];
+
+            // Insert after features header
+            const insertIndex = featuresMatch.index! + featuresMatch[0].length;
+            const newContent = content.slice(0, insertIndex) + bulletPoint + '\n' + content.slice(insertIndex);
+
+            writeFileSync(readmePath, newContent);
+            logger.success('README updated with new feature');
+            return true;
+        } catch (error) {
+            logger.warn(`README update failed: ${error}`);
+            return false;
         }
     }
 }

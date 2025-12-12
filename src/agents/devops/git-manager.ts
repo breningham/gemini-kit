@@ -1,7 +1,7 @@
 /**
  * Git Manager Agent
- * Stage, commit, and push code with professional standards
- * Acts as DevOps - uses team context for smart commit messages
+ * Stage, commit, push, and CREATE BRANCHES with professional standards
+ * NOW supports branch creation and improved pushing
  */
 
 import { BaseAgent, AgentOutput } from '../base-agent.js';
@@ -14,7 +14,7 @@ export class GitManagerAgent extends BaseAgent {
     constructor() {
         super({
             name: 'git-manager',
-            description: 'Stage, commit, and push code with professional standards',
+            description: 'Stage, commit, push, and create branches with professional standards',
             category: 'devops',
         });
     }
@@ -84,9 +84,7 @@ Format: <type>(<scope>): <subject>
 Types: feat, fix, docs, style, refactor, test, chore
 Be concise. Return ONLY the commit message, no explanation.`;
 
-            const result = await providerManager.generate([
-                { role: 'user', content: prompt },
-            ]);
+            const result = await providerManager.generate([{ role: 'user', content: prompt }]);
 
             const commitMessage = result.content
                 .replace(/```/g, '')
@@ -150,6 +148,68 @@ Be concise. Return ONLY the commit message, no explanation.`;
     }
 
     /**
+     * Create a feature branch and commit
+     */
+    async createBranch(branchName?: string): Promise<AgentOutput> {
+        const ctx = this.getContext();
+        const teamCtx = getTeamContext();
+
+        try {
+            // Generate branch name from task if not provided
+            const branch = branchName || this.generateBranchName(ctx.currentTask);
+
+            // Check if on main/master
+            const currentBranch = execSync('git branch --show-current', {
+                cwd: ctx.projectRoot,
+                encoding: 'utf-8',
+            }).trim();
+
+            if (currentBranch === branch) {
+                logger.info(`Already on branch ${branch}`);
+            } else {
+                // Create and checkout new branch
+                try {
+                    execSync(`git checkout -b ${branch}`, { cwd: ctx.projectRoot });
+                    logger.success(`Created branch: ${branch}`);
+                } catch {
+                    // Branch might exist, just checkout
+                    execSync(`git checkout ${branch}`, { cwd: ctx.projectRoot });
+                    logger.info(`Switched to existing branch: ${branch}`);
+                }
+            }
+
+            if (teamCtx) {
+                teamCtx.sendMessage(
+                    this.name,
+                    'all',
+                    'info',
+                    `🌿 Working on branch: ${branch}`
+                );
+            }
+
+            // Now commit changes
+            return await this.execute();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            return this.createOutput(false, `Branch creation failed: ${message}`, {});
+        }
+    }
+
+    /**
+     * Generate branch name from task description
+     */
+    private generateBranchName(task: string): string {
+        const prefix = 'feature';
+        const slug = task
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .split(/\s+/)
+            .slice(0, 4)
+            .join('-');
+        return `${prefix}/${slug || 'update'}`;
+    }
+
+    /**
      * Commit and push
      */
     async commitAndPush(): Promise<AgentOutput> {
@@ -163,22 +223,34 @@ Be concise. Return ONLY the commit message, no explanation.`;
         const ctx = this.getContext();
 
         try {
-            execSync('git push', { cwd: ctx.projectRoot });
-            logger.success('Pushed to remote');
+            // Get current branch
+            const branch = execSync('git branch --show-current', {
+                cwd: ctx.projectRoot,
+                encoding: 'utf-8',
+            }).trim();
+
+            // Push with upstream if needed
+            try {
+                execSync(`git push origin ${branch}`, { cwd: ctx.projectRoot });
+            } catch {
+                execSync(`git push --set-upstream origin ${branch}`, { cwd: ctx.projectRoot });
+            }
+
+            logger.success(`Pushed to remote (${branch})`);
 
             if (teamCtx) {
                 teamCtx.sendMessage(
                     this.name,
                     'all',
                     'result',
-                    `🚀 ${commitResult.message} and pushed to remote`
+                    `🚀 ${commitResult.message} and pushed to ${branch}`
                 );
             }
 
             return this.createOutput(
                 true,
-                `${commitResult.message} and pushed`,
-                commitResult.data,
+                `${commitResult.message} and pushed to ${branch}`,
+                { ...commitResult.data, branch },
                 []
             );
         } catch (error) {

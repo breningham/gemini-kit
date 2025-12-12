@@ -39,7 +39,15 @@ Thêm vào cuối file (trước <!-- Thêm session mới -->):
 - [Task kế tiếp]
 ```
 
-### Bước 3: CẬP NHẬT CHANGELOG.md (nếu có feature mới)
+### Bước 3: CẬP NHẬT IMPLEMENTATION_PLAN.md (nếu có thay đổi lớn)
+
+```markdown
+1. Update Current Status table (version, build size)
+2. Mark completed phases với [x]
+3. Update "So Sánh với ClaudeKit" nếu có feature mới
+```
+
+### Bước 4: CẬP NHẬT CHANGELOG.md (nếu có feature mới)
 
 ```markdown
 - **[Feature Name]** - [Mô tả ngắn]
@@ -47,7 +55,7 @@ Thêm vào cuối file (trước <!-- Thêm session mới -->):
   - [Chi tiết 2]
 ```
 
-### Bước 4: COMMIT VÀ PUSH
+### Bước 5: COMMIT VÀ PUSH
 
 ```bash
 git add -A
@@ -55,12 +63,13 @@ git commit -m "docs: update tracking files for session [N]"
 git push
 ```
 
-### Bước 5: XÁC NHẬN HOÀN THÀNH
+### Bước 6: XÁC NHẬN HOÀN THÀNH
 
 Báo cáo cho user:
 ```
 ✅ TASKS.md updated
 ✅ SESSION_LOG.md updated
+✅ IMPLEMENTATION_PLAN.md updated (nếu có)
 ✅ CHANGELOG.md updated (nếu có)
 ✅ Committed: [hash]
 ```

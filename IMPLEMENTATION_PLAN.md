@@ -1,268 +1,139 @@
 # Gemini-Kit: ClaudeKit-Style AI Development Assistant
 
+## 📊 Current Status: v0.3.0 ✅ COMPLETE
+
+| Milestone | Status |
+|-----------|--------|
+| 15 Agents | ✅ Complete with Real Skills |
+| 43+ Commands | ✅ Complete |
+| Multi-Model | ✅ Gemini, Claude, OpenAI, CLIProxyAPI |
+| Agent Skills | ✅ Phase 1, 2, 3 Complete |
+| Build | 163KB |
+| Tests | 9/9 ✅ |
+
+---
+
 ## 🎯 Mục Tiêu
 
 Xây dựng CLI tool **giống hệt ClaudeKit** nhưng hỗ trợ **multi-model** (Gemini, Claude, OpenAI).
 
 ---
 
-## 📐 Kiến Trúc ClaudeKit (Reference)
+## ✅ Agent Skills Upgrade (v0.3.0)
 
-```
-ClaudeKit/
-├── 14 Specialized Agents (CORE)     ← Trung tâm của hệ thống
-│   ├── planner           - Nghiên cứu, tạo implementation plans
-│   ├── scout             - Tìm kiếm files nhanh qua parallel search
-│   ├── debugger          - Điều tra issues, phân tích logs
-│   ├── tester            - Validate code qua comprehensive testing
-│   ├── code-reviewer     - Code review và quality assessment
-│   ├── docs-manager      - Quản lý technical documentation
-│   ├── project-manager   - Project oversight và coordination
-│   ├── ui-ux-designer    - Design interfaces, wireframes
-│   ├── copywriter        - High-converting marketing copy
-│   ├── brainstormer      - Explore ideas, debate decisions
-│   ├── researcher        - Multi-source research, best practices
-│   ├── journal-writer    - Document technical difficulties
-│   ├── git-manager       - Stage, commit, push với standards
-│   └── database-admin    - Database optimization, query analysis
-│
-├── Agent Orchestration
-│   ├── Sequential        - planner → code → tester → reviewer
-│   ├── Parallel          - Multiple scouts search independently
-│   └── Hybrid            - Parallel scouts → Sequential planning
-│
-├── 38+ Slash Commands
-│   ├── /cook             - All-in-one (invokes multiple agents)
-│   ├── /bootstrap        - Project generation
-│   ├── /plan             - Invokes planner agent
-│   ├── /scout            - Invokes scout agent
-│   ├── /test             - Invokes tester agent
-│   ├── /fix              - Smart router → appropriate agent
-│   └── ...
-│
-└── CLI (ck command)
-```
+### Phase 1: Core Skills ✅
+- [x] **Tester**: generateTestsForFiles() - auto-generate Vitest tests
+- [x] **Debugger**: applyFix() - SEARCH/REPLACE auto-fix
+
+### Phase 2: Enhanced Skills ✅
+- [x] **Scout**: searchFileContent() + symbol extraction
+- [x] **Code-Reviewer**: runEslintFix() - ESLint --fix
+
+### Phase 3: Advanced Skills ✅
+- [x] **Git-Manager**: createBranch() + generateBranchName()
+- [x] **Docs-Manager**: updateReadme() capability
 
 ---
 
-## 📁 Cấu Trúc Dự Án Gemini-Kit
+## ✅ All Completed Phases
+
+### Phase 1: Foundation ✅
+- [x] Initialize pnpm project
+- [x] Setup TypeScript với strict mode
+- [x] Configure tsup cho build
+- [x] Setup ESLint + Prettier
+- [x] Create base project structure
+
+### Phase 2: Agent System ✅
+- [x] Base agent class
+- [x] Agent orchestration (Sequential, Parallel, Hybrid)
+- [x] 15 Specialized Agents
+- [x] Team Context Sharing
+
+### Phase 3: Commands ✅
+- [x] 43+ Slash Commands
+- [x] Core workflow (cook, plan, scout)
+- [x] Fix commands (fast, hard, types)
+- [x] Git commands (cm, cp, pr)
+- [x] Design + Content commands
+
+### Phase 4: Polish ✅
+- [x] Testing (9 tests)
+- [x] Documentation (README, CHANGELOG)
+- [x] CLI Proxy API Integration
+- [x] Session Persistence
+
+---
+
+## 📁 Project Structure
 
 ```
 gemini-kit/
 ├── src/
-│   ├── cli/                    # CLI entry point
-│   │   ├── index.ts
-│   │   └── commands/           # CLI command handlers
-│   │
-│   ├── agents/                 # 14 SPECIALIZED AGENTS (CORE)
-│   │   ├── base-agent.ts       # Base agent class
-│   │   ├── agent-registry.ts   # Agent registration
-│   │   ├── orchestrator.ts     # Agent orchestration
-│   │   │
-│   │   ├── development/        # Development agents
-│   │   │   ├── planner.ts
-│   │   │   ├── scout.ts
-│   │   │   ├── coder.ts
-│   │   │   └── debugger.ts
-│   │   │
-│   │   ├── quality/            # Quality agents
-│   │   │   ├── tester.ts
-│   │   │   └── code-reviewer.ts
-│   │   │
-│   │   ├── documentation/      # Documentation agents
-│   │   │   ├── docs-manager.ts
-│   │   │   ├── project-manager.ts
-│   │   │   └── journal-writer.ts
-│   │   │
-│   │   ├── creative/           # Creative agents
-│   │   │   ├── ui-ux-designer.ts
-│   │   │   ├── copywriter.ts
-│   │   │   └── brainstormer.ts
-│   │   │
-│   │   ├── research/           # Research agents
-│   │   │   └── researcher.ts
-│   │   │
-│   │   └── devops/             # DevOps agents
-│   │       ├── git-manager.ts
-│   │       └── database-admin.ts
-│   │
-│   ├── commands/               # Slash commands (invoke agents)
-│   │   ├── workflow/           # Core workflow
-│   │   │   ├── cook.ts         # → planner + coder + tester + reviewer
-│   │   │   ├── bootstrap.ts    # → researcher + planner + coder
-│   │   │   ├── plan.ts         # → planner
-│   │   │   └── ...
-│   │   ├── fix/                # Fix commands
-│   │   ├── git/                # Git commands
-│   │   ├── design/             # Design commands
-│   │   └── ...
-│   │
-│   ├── providers/              # AI Model Providers
-│   │   ├── base-provider.ts
-│   │   ├── gemini.ts
-│   │   ├── claude.ts
-│   │   └── openai.ts
-│   │
-│   ├── context/                # Shared context system
-│   │   ├── context-manager.ts
-│   │   └── handoff.ts          # Agent handoff protocols
-│   │
-│   └── utils/
-│       ├── config.ts
-│       ├── logger.ts
-│       └── file-utils.ts
-│
-├── .gemini-kit/                # Project-level config (like .claude/)
-│   ├── config.json
-│   ├── agents/                 # Custom agent definitions
-│   └── commands/               # Custom commands
-│
-├── package.json
-├── tsconfig.json
-└── README.md
+│   ├── agents/          # 15 Specialized Agents
+│   │   ├── development/ # planner, scout, coder, debugger
+│   │   ├── quality/     # tester, code-reviewer
+│   │   ├── devops/      # git-manager, database-admin
+│   │   ├── documentation/ # docs-manager, project-manager
+│   │   ├── creative/    # brainstormer, ui-designer, copywriter
+│   │   └── research/    # researcher, journal-writer
+│   ├── commands/        # 43+ Commands
+│   ├── providers/       # Gemini, Claude, OpenAI, CLIProxyAPI
+│   └── context/         # TeamContext, SessionManager
+├── tests/               # 9 Unit Tests
+└── dist/                # 163KB Build
 ```
 
 ---
 
-## 🗓️ Kế Hoạch Triển Khai (14 Days)
-
-### Phase 1: Foundation (Day 1-3)
-
-#### Day 1: Project Setup
-- [ ] Initialize pnpm project
-- [ ] Setup TypeScript với strict mode
-- [ ] Configure tsup cho build
-- [ ] Setup ESLint + Prettier
-- [ ] Create base project structure
-
-#### Day 2: AI Providers
-- [ ] Implement base provider interface
-- [ ] Gemini provider
-- [ ] Claude provider
-- [ ] OpenAI provider
-- [ ] Provider selection logic
-
-#### Day 3: CLI Framework
-- [ ] Setup Commander.js
-- [ ] Create gk command entry point
-- [ ] Basic command routing
-- [ ] Configuration system
-- [ ] Logger setup
-
----
-
-### Phase 2: Agent System (Day 4-8) ⭐ CORE
-
-#### Day 4: Agent Architecture
-- [ ] Base agent class với:
-  - State management
-  - Context access
-  - Tool invocation
-  - Report generation
-- [ ] Agent registry
-- [ ] Agent lifecycle management
-
-#### Day 5: Agent Orchestration
-- [ ] Sequential execution pattern
-- [ ] Parallel execution pattern
-- [ ] Hybrid orchestration
-- [ ] Context sharing between agents
-- [ ] Handoff protocols
-
-#### Day 6-7: Development Agents
-- [ ] **planner** - Research, analysis, implementation plans
-- [ ] **scout** - Fast parallel file search
-- [ ] **coder** - Code generation (nếu cần)
-- [ ] **debugger** - Issue investigation, log analysis
-
-#### Day 8: Quality + DevOps Agents
-- [ ] **tester** - Test generation, execution
-- [ ] **code-reviewer** - Code review, quality assessment
-- [ ] **git-manager** - Git operations
-- [ ] **database-admin** - DB operations
-
----
-
-### Phase 3: Commands (Day 9-11)
-
-#### Day 9: Core Workflow Commands
-- [ ] /cook - All-in-one (planner → coder → tester → reviewer)
-- [ ] /bootstrap - Project generation
-- [ ] /plan - Planning only
-- [ ] /scout - File search
-
-#### Day 10: Fix + Git Commands
-- [ ] /fix (smart router)
-- [ ] /fix:fast, /fix:hard, /fix:types, /fix:ui, /fix:ci
-- [ ] /git:commit, /git:cp, /git:pr
-
-#### Day 11: Design + Content Commands
-- [ ] /design:fast, /design:good
-- [ ] /content:good, /content:cro
-- [ ] /docs:init, /docs:update
-
----
-
-### Phase 4: Creative + Research Agents (Day 12-13)
-
-#### Day 12
-- [ ] **ui-ux-designer** - UI/UX design generation
-- [ ] **copywriter** - Marketing copy
-- [ ] **brainstormer** - Idea exploration
-
-#### Day 13
-- [ ] **researcher** - Deep research
-- [ ] **journal-writer** - Development journaling
-- [ ] **docs-manager** - Documentation management
-- [ ] **project-manager** - Project coordination
-
----
-
-### Phase 5: Polish (Day 14)
-
-- [ ] Testing
-- [ ] Documentation
-- [ ] README (EN + VI)
-- [ ] Example workflows
-- [ ] Bug fixes
-
----
-
-## 🆚 So Sánh
+## 🆚 So Sánh với ClaudeKit
 
 | Feature | ClaudeKit | Gemini-Kit |
 |---------|-----------|------------|
-| Specialized Agents | 14 | 14 (giống hệt) |
-| Agent Orchestration | ✅ | ✅ |
-| Commands | 38+ | 38+ (giống hệt) |
-| AI Model | Claude only | Gemini + Claude + OpenAI |
-| CLI Command | `ck` | `gk` |
+| Agents | 14 | 15 ✅ |
+| Commands | 38+ | 43+ ✅ |
+| AI Models | Claude only | Gemini + Claude + OpenAI + CLIProxyAPI |
+| Agent Skills | Basic | Real Actions ✅ |
+| Test Generation | No | Yes ✅ |
+| Auto-Fix | No | Yes ✅ |
+| ESLint Integration | No | Yes ✅ |
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Install
+git clone https://github.com/nth5693/gemini-kit.git
+cd gemini-kit
+pnpm install && pnpm build
+
+# Configure
+cat > ~/.gemini-kit/config.json << 'EOF'
+{
+  "defaultProvider": "cliproxy",
+  "providers": {
+    "cliproxy": {
+      "apiKey": "your-api-key",
+      "baseURL": "https://your-proxy.com/v1",
+      "model": "gemini-2.5-flash"
+    }
+  }
+}
+EOF
+
+# Link globally
+pnpm link --global
+
+# Start cooking!
+gk cook "create a todo app"
+```
 
 ---
 
 ## 📝 Notes
 
 1. **Agents là CORE** - Mọi thứ xoay quanh agents
-2. **Commands chỉ là wrapper** - Commands gọi agents, không tự implement logic
-3. **Context sharing** - Agents chia sẻ context qua orchestrator
-4. **Handoff protocols** - Agent này chuyển giao cho agent khác
-
----
-
-## 🚀 Getting Started (sau khi hoàn thành)
-
-```bash
-# Install
-npm install -g gemini-kit
-
-# Initialize in project
-gk init
-
-# Start cooking
-gk cook "implement user authentication"
-
-# Use specific agent
-gk plan "design API architecture"
-gk scout "authentication files"
-gk test "run all tests"
-```
+2. **Commands gọi agents** - Không tự implement logic
+3. **Team Context** - Agents chia sẻ context
+4. **Real Actions** - Agents thực sự thực hiện actions (write files, run tests, fix code)
