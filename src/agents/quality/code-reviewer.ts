@@ -238,6 +238,39 @@ Be concise - max 200 words.`;
 
         return { fixedCount, issues };
     }
+
+    /**
+     * Run npm audit for security vulnerabilities
+     */
+    async runSecurityScan(projectRoot: string): Promise<{ vulnerabilities: number; details: string }> {
+        logger.info('🔒 Running security scan (npm audit)...');
+
+        try {
+            const output = execSync('npm audit --json 2>/dev/null || true', {
+                cwd: projectRoot,
+                encoding: 'utf-8',
+                timeout: 60000,
+            });
+
+            try {
+                const audit = JSON.parse(output);
+                const vulns = audit.metadata?.vulnerabilities || {};
+                const total = (vulns.low || 0) + (vulns.moderate || 0) + (vulns.high || 0) + (vulns.critical || 0);
+
+                logger.info(`🛡️ Found ${total} vulnerabilities: ${vulns.critical || 0} critical, ${vulns.high || 0} high`);
+
+                return {
+                    vulnerabilities: total,
+                    details: `Critical: ${vulns.critical || 0}, High: ${vulns.high || 0}, Moderate: ${vulns.moderate || 0}, Low: ${vulns.low || 0}`,
+                };
+            } catch {
+                return { vulnerabilities: 0, details: 'Could not parse audit output' };
+            }
+        } catch {
+            return { vulnerabilities: 0, details: 'npm audit not available' };
+        }
+    }
 }
 
 export const codeReviewerAgent = new CodeReviewerAgent();
+
