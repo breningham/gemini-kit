@@ -7,7 +7,7 @@
 import { BaseAgent, AgentOutput } from '../base-agent.js';
 import { getTeamContext } from '../../context/team-context.js';
 import { providerManager } from '../../providers/index.js';
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../../utils/logger.js';
 

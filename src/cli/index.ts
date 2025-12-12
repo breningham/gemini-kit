@@ -46,6 +46,9 @@ import { integratePolarCommand, integrateSePayCommand } from '../commands/integr
 import { brainstormCommand } from '../commands/brainstorm.js';
 import { journalCommand } from '../commands/journal.js';
 
+// Session
+import { sessionListCommand, sessionSaveCommand, sessionLoadCommand, sessionInfoCommand, sessionDeleteCommand } from '../commands/session.js';
+
 const program = new Command();
 program.name('gk').description('Gemini-Kit: ClaudeKit-style AI Assistant').version('0.1.0');
 
@@ -125,6 +128,14 @@ integrate.command('sepay').description('SePay.vn').action(integrateSePayCommand)
 // === OTHER (2) ===
 program.command('brainstorm <topic>').description('Ideas').action(brainstormCommand);
 program.command('journal').description('Journal').action(journalCommand);
+
+// === SESSION (5) ===
+const session = program.command('session').description('Session management');
+session.command('list').description('List saved sessions').action(sessionListCommand);
+session.command('save [name]').description('Save current session').action(sessionSaveCommand);
+session.command('load [id]').description('Load session').action(sessionLoadCommand);
+session.command('info').description('Show current session info').action(sessionInfoCommand);
+session.command('delete <id>').description('Delete session').action(sessionDeleteCommand);
 
 // Banner
 console.log(chalk.bold.cyan(`
