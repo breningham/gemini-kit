@@ -1,103 +1,136 @@
 /**
- * Gemini-Kit CLI Entry Point
- * ClaudeKit-style AI Development Assistant
+ * Gemini-Kit CLI - 100% ClaudeKit Parity
  */
 
 import { Command } from 'commander';
 import chalk from 'chalk';
 
-// Commands
+// Core
 import { cookCommand } from '../commands/cook.js';
-import { planCommand } from '../commands/plan.js';
+import { bootstrapCommand } from '../commands/bootstrap.js';
+import { planCommand, planCiCommand, planTwoCommand, planCroCommand } from '../commands/plan.js';
+import { codeCommand } from '../commands/code.js';
+import { codeReviewCommand } from '../commands/code-review.js';
 import { scoutCommand } from '../commands/scout.js';
 import { initCommand } from '../commands/init.js';
 import { testCommand } from '../commands/test.js';
 import { debugCommand } from '../commands/debug.js';
-import { gitCommitCommand, gitCommitPushCommand } from '../commands/git.js';
-import { docsInitCommand, docsUpdateCommand } from '../commands/docs.js';
-import { designFastCommand, designGoodCommand, design3dCommand } from '../commands/design.js';
-import { brainstormCommand } from '../commands/brainstorm.js';
-import { journalCommand } from '../commands/journal.js';
+import { askCommand } from '../commands/ask.js';
 import { watzupCommand } from '../commands/watzup.js';
-import { contentGoodCommand, contentCroCommand } from '../commands/content.js';
-import { researchDeepCommand, researchQuickCommand } from '../commands/research.js';
+
+// Fix
 import { fixFastCommand, fixHardCommand, fixTypesCommand, fixTestCommand, fixUiCommand, fixCiCommand, fixLogsCommand } from '../commands/fix.js';
-import { bootstrapCommand } from '../commands/bootstrap.js';
-import { codeCommand } from '../commands/code.js';
-import { codeReviewCommand } from '../commands/code-review.js';
+
+// Git
+import { gitCommitCommand, gitCommitPushCommand } from '../commands/git.js';
+
+// Docs
+import { docsInitCommand, docsUpdateCommand, docsSummarizeCommand } from '../commands/docs.js';
+
+// Design
+import { designFastCommand, designGoodCommand, design3dCommand, designDescribeCommand, designScreenshotCommand, designVideoCommand } from '../commands/design.js';
+
+// Content
+import { contentFastCommand, contentGoodCommand, contentCroCommand, contentEnhanceCommand } from '../commands/content.js';
+
+// Research
+import { researchDeepCommand, researchQuickCommand } from '../commands/research.js';
+
+// Database
 import { dbQueryCommand, dbOptimizeCommand, dbSchemaCommand } from '../commands/db.js';
 
+// Integrate
+import { integratePolarCommand, integrateSePayCommand } from '../commands/integrate.js';
+
+// Other
+import { brainstormCommand } from '../commands/brainstorm.js';
+import { journalCommand } from '../commands/journal.js';
+
 const program = new Command();
+program.name('gk').description('Gemini-Kit: ClaudeKit-style AI Assistant').version('0.1.0');
 
-program
-    .name('gk')
-    .description('Gemini-Kit: ClaudeKit-style AI Development Assistant')
-    .version('0.1.0');
-
-// Core workflow commands
-program.command('cook <task>').description('All-in-one workflow (planner → coder → tester → reviewer → git)').action(cookCommand);
-program.command('bootstrap <project-name>').description('Generate new project').option('-t, --template <template>', 'Template').action((n, o) => bootstrapCommand(n, o.template));
-program.command('plan <feature>').description('Create implementation plan').action(planCommand);
-program.command('code <plan-path>').description('Generate code from plan (e.g., gk code @plans/feature.md)').action(codeCommand);
-program.command('code-review [file]').description('Code review (invokes: code-reviewer agent)').action(codeReviewCommand);
+// === CORE (10) ===
+program.command('cook <task>').description('All-in-one workflow').action(cookCommand);
+program.command('bootstrap <name>').description('New project').option('-t, --template <t>').action((n, o) => bootstrapCommand(n, o.template));
 program.command('scout <query>').description('Search codebase').action(scoutCommand);
-program.command('init').description('Initialize gemini-kit').action(initCommand);
+program.command('init').description('Initialize').action(initCommand);
 program.command('test').description('Run tests').action(testCommand);
-program.command('debug <issue>').description('Debug an issue').action(debugCommand);
-
-// Fix commands (7)
-const fix = program.command('fix').description('Fix issues');
-fix.command('fast').description('Quick fixes (lint/format)').action(fixFastCommand);
-fix.command('hard <issue>').description('Complex investigation').action(fixHardCommand);
-fix.command('types').description('TypeScript errors').action(fixTypesCommand);
-fix.command('test').description('Failing tests').action(fixTestCommand);
-fix.command('ui <component>').description('UI issues').action(fixUiCommand);
-fix.command('ci').description('CI/CD issues').action(fixCiCommand);
-fix.command('logs [file]').description('Log analysis').action(fixLogsCommand);
-
-// Git commands (3)
-const git = program.command('git').description('Git operations');
-git.command('cm').description('Commit with AI message').action(gitCommitCommand);
-git.command('cp').description('Commit and push').action(gitCommitPushCommand);
-git.command('pr <branch>').description('Create PR').action(async (b: string) => console.log(chalk.cyan('🔀 git:pr'), b));
-
-// Docs commands (2)
-const docs = program.command('docs').description('Documentation');
-docs.command('init').description('Initialize docs').action(docsInitCommand);
-docs.command('update').description('Update docs').action(docsUpdateCommand);
-
-// Design commands (3)
-const design = program.command('design').description('Design operations');
-design.command('fast <description>').description('Quick mockups').action(designFastCommand);
-design.command('good <description>').description('Premium designs').action(designGoodCommand);
-design.command('3d <description>').description('Three.js scenes').action(design3dCommand);
-
-// Content commands (2)
-const content = program.command('content').description('Content creation');
-content.command('good <description>').description('Quality content').action(contentGoodCommand);
-content.command('cro <description>').description('CRO copy').action(contentCroCommand);
-
-// Research commands (2)
-const research = program.command('research').description('Technical research');
-research.command('deep <topic>').description('Deep research').action(researchDeepCommand);
-research.command('quick <topic>').description('Quick overview').action(researchQuickCommand);
-
-// Database commands (3)
-const db = program.command('db').description('Database operations (invokes: database-admin agent)');
-db.command('query <sql>').description('Analyze SQL query').action(dbQueryCommand);
-db.command('optimize').description('Database optimization').action(dbOptimizeCommand);
-db.command('schema').description('Schema analysis').action(dbSchemaCommand);
-
-// Other commands
-program.command('brainstorm <topic>').description('Explore ideas').action(brainstormCommand);
-program.command('journal').description('Dev journal').action(journalCommand);
+program.command('debug <issue>').description('Debug issue').action(debugCommand);
+program.command('ask <question>').description('Ask about codebase').action(askCommand);
 program.command('watzup').description('Project status').action(watzupCommand);
+program.command('code <path>').description('Code from plan').action(codeCommand);
+program.command('code-review [file]').description('Code review').action(codeReviewCommand);
+
+// === PLAN (4) ===
+const plan = program.command('plan').description('Planning');
+plan.command('feature <desc>').description('Create plan').action(planCommand);
+plan.command('ci <url>').description('CI fix plan').action(planCiCommand);
+plan.command('two <feature>').description('2 approaches').action(planTwoCommand);
+plan.command('cro <page>').description('CRO plan').action(planCroCommand);
+
+// === FIX (7) ===
+const fix = program.command('fix').description('Fix issues');
+fix.command('fast').description('Quick').action(fixFastCommand);
+fix.command('hard <issue>').description('Complex').action(fixHardCommand);
+fix.command('types').description('TypeScript').action(fixTypesCommand);
+fix.command('test').description('Tests').action(fixTestCommand);
+fix.command('ui <comp>').description('UI').action(fixUiCommand);
+fix.command('ci').description('CI/CD').action(fixCiCommand);
+fix.command('logs [file]').description('Logs').action(fixLogsCommand);
+
+// === GIT (3) ===
+const git = program.command('git').description('Git');
+git.command('cm').description('Commit').action(gitCommitCommand);
+git.command('cp').description('Commit+Push').action(gitCommitPushCommand);
+git.command('pr <branch>').description('PR').action(async (b) => console.log(chalk.cyan('🔀 PR:'), b));
+
+// === DOCS (3) ===
+const docs = program.command('docs').description('Docs');
+docs.command('init').description('Init').action(docsInitCommand);
+docs.command('update').description('Update').action(docsUpdateCommand);
+docs.command('summarize').description('Summarize').action(docsSummarizeCommand);
+
+// === DESIGN (6) ===
+const design = program.command('design').description('Design');
+design.command('fast <desc>').description('Quick').action(designFastCommand);
+design.command('good <desc>').description('Premium').action(designGoodCommand);
+design.command('3d <desc>').description('Three.js').action(design3dCommand);
+design.command('describe <img>').description('Describe image').action(designDescribeCommand);
+design.command('screenshot <img>').description('Screenshot→Code').action(designScreenshotCommand);
+design.command('video <vid>').description('Video→Code').action(designVideoCommand);
+
+// === CONTENT (4) ===
+const content = program.command('content').description('Content');
+content.command('fast <desc>').description('Quick').action(contentFastCommand);
+content.command('good <desc>').description('Quality').action(contentGoodCommand);
+content.command('cro <desc>').description('CRO').action(contentCroCommand);
+content.command('enhance <text>').description('Enhance').action(contentEnhanceCommand);
+
+// === RESEARCH (2) ===
+const research = program.command('research').description('Research');
+research.command('deep <topic>').description('Deep').action(researchDeepCommand);
+research.command('quick <topic>').description('Quick').action(researchQuickCommand);
+
+// === DB (3) ===
+const db = program.command('db').description('Database');
+db.command('query <sql>').description('Query').action(dbQueryCommand);
+db.command('optimize').description('Optimize').action(dbOptimizeCommand);
+db.command('schema').description('Schema').action(dbSchemaCommand);
+
+// === INTEGRATE (2) ===
+const integrate = program.command('integrate').description('Integrations');
+integrate.command('polar').description('Polar.sh').action(integratePolarCommand);
+integrate.command('sepay').description('SePay.vn').action(integrateSePayCommand);
+
+// === OTHER (2) ===
+program.command('brainstorm <topic>').description('Ideas').action(brainstormCommand);
+program.command('journal').description('Journal').action(journalCommand);
 
 // Banner
 console.log(chalk.bold.cyan(`
 ╔═══════════════════════════════════════════╗
 ║           Gemini-Kit v0.1.0               ║
-║   ClaudeKit-style AI Development Tool     ║
+║       100% ClaudeKit Parity (38+)         ║
 ╚═══════════════════════════════════════════╝
 `));
 

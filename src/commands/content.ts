@@ -8,33 +8,28 @@ import ora from 'ora';
 import { copywriterAgent } from '../agents/creative/copywriter.js';
 import { providerManager } from '../providers/index.js';
 
+export async function contentFastCommand(description: string): Promise<void> {
+    console.log(chalk.cyan.bold('\n⚡ Quick Content...\n'));
+    const spinner = ora('Generating...').start();
+    try {
+        const prompt = `Create quick, effective content for: ${description}. Be concise but impactful.`;
+        const result = await providerManager.generate([{ role: 'user', content: prompt }]);
+        spinner.succeed('Content created');
+        console.log(result.content);
+    } catch (error) { spinner.fail(`Failed: ${error}`); }
+}
+
 export async function contentGoodCommand(description: string): Promise<void> {
-    console.log(chalk.cyan.bold('\n📝 Creating Quality Content...\n'));
-    console.log(chalk.gray(`Description: ${description}\n`));
-
-    const ctx = {
-        projectRoot: process.cwd(),
-        currentTask: `high-quality content: ${description}`,
-        sharedData: {},
-    };
-
-    const spinner = ora('Generating content...').start();
-
+    console.log(chalk.cyan.bold('\n📝 Quality Content...\n'));
+    const ctx = { projectRoot: process.cwd(), currentTask: `high-quality content: ${description}`, sharedData: {} };
+    const spinner = ora('Generating...').start();
     try {
         copywriterAgent.initialize(ctx);
         const result = await copywriterAgent.execute();
         copywriterAgent.cleanup();
-
-        if (result.success) {
-            spinner.succeed('Content created');
-            console.log(chalk.white('\n📄 Content:\n'));
-            console.log(result.data.copy);
-        } else {
-            spinner.fail(result.message);
-        }
-    } catch (error) {
-        spinner.fail(`Content creation failed: ${error}`);
-    }
+        if (result.success) { spinner.succeed('Content created'); console.log(result.data.copy); }
+        else { spinner.fail(result.message); }
+    } catch (error) { spinner.fail(`Failed: ${error}`); }
 }
 
 export async function contentCroCommand(description: string): Promise<void> {
