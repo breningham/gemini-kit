@@ -15,12 +15,15 @@ import { testCommand } from '../commands/test.js';
 import { debugCommand } from '../commands/debug.js';
 import { gitCommitCommand, gitCommitPushCommand } from '../commands/git.js';
 import { docsInitCommand, docsUpdateCommand } from '../commands/docs.js';
-import { designFastCommand, designGoodCommand } from '../commands/design.js';
+import { designFastCommand, designGoodCommand, design3dCommand } from '../commands/design.js';
 import { brainstormCommand } from '../commands/brainstorm.js';
 import { journalCommand } from '../commands/journal.js';
 import { watzupCommand } from '../commands/watzup.js';
 import { contentGoodCommand, contentCroCommand } from '../commands/content.js';
 import { researchDeepCommand, researchQuickCommand } from '../commands/research.js';
+import { fixFastCommand, fixHardCommand, fixTypesCommand, fixTestCommand, fixUiCommand, fixCiCommand, fixLogsCommand } from '../commands/fix.js';
+import { bootstrapCommand } from '../commands/bootstrap.js';
+import { codeCommand } from '../commands/code.js';
 
 const program = new Command();
 
@@ -36,9 +39,20 @@ program
     .action(cookCommand);
 
 program
+    .command('bootstrap <project-name>')
+    .description('Generate new project (researcher → planner → coder → tester)')
+    .option('-t, --template <template>', 'Project template')
+    .action((name, options) => bootstrapCommand(name, options.template));
+
+program
     .command('plan <feature>')
     .description('Create implementation plan (invokes: planner + researcher)')
     .action(planCommand);
+
+program
+    .command('code <plan-path>')
+    .description('Generate code from plan file (e.g., gk code @plans/feature.md)')
+    .action(codeCommand);
 
 program
     .command('scout <query>')
@@ -63,119 +77,53 @@ program
 // Fix commands
 const fix = program.command('fix').description('Fix issues');
 
-fix
-    .command('fast')
-    .description('Quick fixes (linting, formatting)')
-    .action(async () => {
-        console.log(chalk.cyan('⚡ /fix:fast'));
-        console.log(chalk.gray('Running linter and formatter...'));
-    });
-
-fix
-    .command('hard <issue>')
-    .description('Complex investigation and fix')
-    .action(async (issue: string) => {
-        await debugCommand(issue);
-    });
-
-fix
-    .command('types')
-    .description('Fix TypeScript errors')
-    .action(async () => {
-        console.log(chalk.cyan('📝 /fix:types'));
-        console.log(chalk.gray('Running TypeScript compiler...'));
-    });
+fix.command('fast').description('Quick fixes (linting, formatting)').action(fixFastCommand);
+fix.command('hard <issue>').description('Complex investigation and fix').action(fixHardCommand);
+fix.command('types').description('Fix TypeScript errors').action(fixTypesCommand);
+fix.command('test').description('Fix failing tests').action(fixTestCommand);
+fix.command('ui <component>').description('Fix UI issues').action(fixUiCommand);
+fix.command('ci').description('Fix CI/CD issues').action(fixCiCommand);
+fix.command('logs [file]').description('Analyze logs for errors').action(fixLogsCommand);
 
 // Git commands
 const git = program.command('git').description('Git operations (invokes: git-manager agent)');
 
-git
-    .command('cm')
-    .description('Stage and commit with AI-generated message')
-    .action(gitCommitCommand);
-
-git
-    .command('cp')
-    .description('Commit and push')
-    .action(gitCommitPushCommand);
-
-git
-    .command('pr <branch>')
-    .description('Create pull request')
-    .action(async (branch: string) => {
-        console.log(chalk.cyan('🔀 /git:pr'), branch);
-        console.log(chalk.gray('TODO: Implement PR creation'));
-    });
+git.command('cm').description('Stage and commit with AI-generated message').action(gitCommitCommand);
+git.command('cp').description('Commit and push').action(gitCommitPushCommand);
+git.command('pr <branch>').description('Create pull request').action(async (branch: string) => {
+    console.log(chalk.cyan('🔀 /git:pr'), branch);
+    console.log(chalk.gray('TODO: Implement PR creation'));
+});
 
 // Docs commands
 const docs = program.command('docs').description('Documentation (invokes: docs-manager agent)');
 
-docs
-    .command('init')
-    .description('Initialize documentation structure')
-    .action(docsInitCommand);
-
-docs
-    .command('update')
-    .description('Update documentation')
-    .action(docsUpdateCommand);
+docs.command('init').description('Initialize documentation structure').action(docsInitCommand);
+docs.command('update').description('Update documentation').action(docsUpdateCommand);
 
 // Design commands
 const design = program.command('design').description('Design operations (invokes: ui-ux-designer agent)');
 
-design
-    .command('fast <description>')
-    .description('Quick UI mockups')
-    .action(designFastCommand);
-
-design
-    .command('good <description>')
-    .description('Premium designs with full spec')
-    .action(designGoodCommand);
+design.command('fast <description>').description('Quick UI mockups').action(designFastCommand);
+design.command('good <description>').description('Premium designs with full spec').action(designGoodCommand);
+design.command('3d <description>').description('Three.js 3D scenes').action(design3dCommand);
 
 // Content commands
 const content = program.command('content').description('Content creation (invokes: copywriter agent)');
 
-content
-    .command('good <description>')
-    .description('Create high-quality content')
-    .action(contentGoodCommand);
-
-content
-    .command('cro <description>')
-    .description('Create CRO-optimized conversion content')
-    .action(contentCroCommand);
+content.command('good <description>').description('Create high-quality content').action(contentGoodCommand);
+content.command('cro <description>').description('Create CRO-optimized conversion content').action(contentCroCommand);
 
 // Research commands
 const research = program.command('research').description('Technical research (invokes: researcher agent)');
 
-research
-    .command('deep <topic>')
-    .description('Deep multi-phase research with saved output')
-    .action(researchDeepCommand);
+research.command('deep <topic>').description('Deep multi-phase research with saved output').action(researchDeepCommand);
+research.command('quick <topic>').description('Quick research overview').action(researchQuickCommand);
 
-research
-    .command('quick <topic>')
-    .description('Quick research overview')
-    .action(researchQuickCommand);
-
-// Brainstorm command
-program
-    .command('brainstorm <topic>')
-    .description('Explore ideas (invokes: brainstormer agent)')
-    .action(brainstormCommand);
-
-// Journal command
-program
-    .command('journal')
-    .description('Write development journal (invokes: journal-writer agent)')
-    .action(journalCommand);
-
-// Watzup command (status)
-program
-    .command('watzup')
-    .description('Project status overview (invokes: project-manager agent)')
-    .action(watzupCommand);
+// Other commands
+program.command('brainstorm <topic>').description('Explore ideas (invokes: brainstormer agent)').action(brainstormCommand);
+program.command('journal').description('Write development journal (invokes: journal-writer agent)').action(journalCommand);
+program.command('watzup').description('Project status overview (invokes: project-manager agent)').action(watzupCommand);
 
 // Show banner
 console.log(chalk.bold.cyan(`
@@ -186,4 +134,3 @@ console.log(chalk.bold.cyan(`
 `));
 
 program.parse();
-
