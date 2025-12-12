@@ -1,6 +1,7 @@
 /**
  * Provider Manager
  * Manages AI provider selection and switching
+ * Supports CLIProxyAPI via baseURL
  */
 
 import { BaseProvider, Message, GenerateOptions, GenerateResult, StreamChunk } from './base-provider.js';
@@ -9,11 +10,12 @@ import { ClaudeProvider } from './claude.js';
 import { OpenAIProvider } from './openai.js';
 import { loadConfig } from '../utils/config.js';
 
-export type ProviderName = 'gemini' | 'claude' | 'openai';
+export type ProviderName = 'gemini' | 'claude' | 'openai' | 'cliproxy';
 
 export interface ProviderConfig {
     apiKey: string;
     model?: string;
+    baseURL?: string;
 }
 
 export class ProviderManager {
@@ -24,9 +26,6 @@ export class ProviderManager {
         this.loadFromConfig();
     }
 
-    /**
-     * Load providers from config
-     */
     private loadFromConfig(): void {
         const config = loadConfig();
 
@@ -47,7 +46,17 @@ export class ProviderManager {
         if (config.providers.openai?.apiKey) {
             this.register('openai', new OpenAIProvider(
                 config.providers.openai.apiKey,
-                config.providers.openai.model
+                config.providers.openai.model,
+                config.providers.openai.baseURL
+            ));
+        }
+
+        // CLIProxyAPI support - uses OpenAI-compatible API
+        if (config.providers.cliproxy?.baseURL) {
+            this.register('cliproxy', new OpenAIProvider(
+                config.providers.cliproxy.apiKey || 'cliproxy',
+                config.providers.cliproxy.model || 'gemini-2.5-pro',
+                config.providers.cliproxy.baseURL
             ));
         }
 

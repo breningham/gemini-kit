@@ -6,12 +6,19 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { homedir } from 'os';
 
+export interface ProviderSettings {
+    apiKey: string;
+    model: string;
+    baseURL?: string;
+}
+
 export interface GeminiKitConfig {
-    defaultProvider: 'gemini' | 'claude' | 'openai';
+    defaultProvider: 'gemini' | 'claude' | 'openai' | 'cliproxy';
     providers: {
-        gemini?: { apiKey: string; model: string };
-        claude?: { apiKey: string; model: string };
-        openai?: { apiKey: string; model: string };
+        gemini?: ProviderSettings;
+        claude?: ProviderSettings;
+        openai?: ProviderSettings;
+        cliproxy?: ProviderSettings;
     };
     autoCommit: boolean;
     autoTest: boolean;

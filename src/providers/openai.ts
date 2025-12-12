@@ -1,6 +1,6 @@
 /**
  * OpenAI Provider
- * OpenAI GPT integration
+ * OpenAI GPT integration + CLIProxyAPI compatible
  */
 
 import OpenAI from 'openai';
@@ -15,9 +15,12 @@ import {
 export class OpenAIProvider extends BaseProvider {
     private client: OpenAI;
 
-    constructor(apiKey: string, model: string = 'gpt-4o') {
+    constructor(apiKey: string, model: string = 'gpt-4o', baseURL?: string) {
         super(apiKey, model);
-        this.client = new OpenAI({ apiKey });
+        this.client = new OpenAI({
+            apiKey,
+            baseURL: baseURL || undefined,
+        });
     }
 
     get providerName(): string {
