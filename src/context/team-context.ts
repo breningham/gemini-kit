@@ -221,10 +221,22 @@ export class TeamContextManager {
         const recentMessages = this.getMessages(agentName).slice(-5);
         const handoff = this.getLastHandoff();
         const plans = this.getArtifactsByType('plan');
-        const { taskProgress, codebaseInfo } = this.context.knowledge;
+        const { taskProgress, codebaseInfo, findings } = this.context.knowledge;
+
+        // Include project memory if available
+        const projectMemory = findings['projectMemory'] as { name?: string; description?: string } | undefined;
+        const lastSession = findings['lastSession'] as { task?: string; completed?: string[] } | undefined;
 
         return `
 ## Team Context Summary
+
+### Project
+${projectMemory ? `${projectMemory.name}: ${projectMemory.description}` : this.context.projectRoot}
+
+${lastSession ? `### Last Session
+- Task: ${lastSession.task}
+- Completed: ${lastSession.completed?.join(', ') || 'None'}
+` : ''}
 
 ### Current Task
 ${this.context.currentTask}
@@ -249,6 +261,62 @@ ${handoff ? `### Handoff from ${handoff.from}
 ${handoff.content}` : ''}
 `.trim();
     }
+
+    /**
+     * Load project context from files (README, package.json)
+     */
+    loadProjectContext(): void {
+        const { projectRoot } = this.context;
+
+        try {
+            // Read package.json
+            const pkgPath = `${projectRoot}/package.json`;
+            const fs = require('fs');
+            if (fs.existsSync(pkgPath)) {
+                const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+                this.addFinding('projectMemory', {
+                    name: pkg.name || 'Unknown',
+                    version: pkg.version || '0.0.0',
+                    description: pkg.description || '',
+                    dependencies: Object.keys(pkg.dependencies || {}).slice(0, 10),
+                    devDependencies: Object.keys(pkg.devDependencies || {}).slice(0, 10),
+                });
+            }
+
+            // Read README if exists
+            const readmePath = `${projectRoot}/README.md`;
+            if (fs.existsSync(readmePath)) {
+                const readme = fs.readFileSync(readmePath, 'utf-8');
+                // Extract first 500 chars as summary
+                this.addFinding('readmeSummary', readme.slice(0, 500));
+            }
+        } catch {
+            // Ignore errors - project context is optional
+        }
+    }
+
+    /**
+     * Restore context from a previous session
+     */
+    restoreFromSession(sessionData: {
+        activeMembers: TeamContext['activeMembers'];
+        messageLog: TeamContext['messageLog'];
+        artifacts: Array<[string, unknown]>;
+        knowledge: TeamContext['knowledge'];
+    }): void {
+        this.context.activeMembers = sessionData.activeMembers;
+        this.context.messageLog = sessionData.messageLog;
+        this.context.artifacts = new Map(sessionData.artifacts as Array<[string, TeamArtifact]>);
+        this.context.knowledge = sessionData.knowledge;
+
+        // Add last session info
+        this.addFinding('lastSession', {
+            task: this.context.currentTask,
+            completed: Object.entries(this.context.knowledge.taskProgress)
+                .filter(([, done]) => done)
+                .map(([step]) => step),
+        });
+    }
 }
 
 // Singleton for current session
@@ -256,9 +324,14 @@ let currentTeamContext: TeamContextManager | null = null;
 
 export function initTeamContext(projectRoot: string, task: string): TeamContextManager {
     currentTeamContext = new TeamContextManager(projectRoot, task);
+    currentTeamContext.loadProjectContext();
     return currentTeamContext;
 }
 
 export function getTeamContext(): TeamContextManager | null {
     return currentTeamContext;
+}
+
+export function setTeamContext(ctx: TeamContextManager): void {
+    currentTeamContext = ctx;
 }

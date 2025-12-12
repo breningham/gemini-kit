@@ -5,6 +5,7 @@
 
 import { BaseAgent, AgentContext, AgentOutput } from './base-agent.js';
 import { TeamContextManager, initTeamContext, getTeamContext } from '../context/team-context.js';
+import { initSessionManager, getSessionManager } from '../context/session-manager.js';
 import { logger } from '../utils/logger.js';
 
 export type OrchestrationPattern = 'sequential' | 'parallel' | 'hybrid';
@@ -50,11 +51,71 @@ export class TeamOrchestrator {
 
     /**
      * Start a team session for a task
+     * Automatically loads project context
      */
     startSession(projectRoot: string, task: string): TeamContextManager {
         this.teamContext = initTeamContext(projectRoot, task);
         logger.info(`\n🚀 Team Session Started: "${task}"\n`);
         return this.teamContext;
+    }
+
+    /**
+     * Resume from last session or start new
+     * Returns summary of previous session if exists
+     */
+    resumeSession(projectRoot: string, task: string): {
+        teamContext: TeamContextManager;
+        previousSummary: import('../context/session-manager.js').SessionSummary | null;
+    } {
+        // Initialize session manager
+        const sessionManager = initSessionManager(projectRoot);
+
+        // Check for previous session
+        const previousSummary = sessionManager.getLatestSummary();
+
+        if (previousSummary) {
+            logger.info(`\n📂 Previous Session Found:`);
+            logger.info(`   Task: ${previousSummary.lastTask}`);
+            logger.info(`   Completed: ${previousSummary.completedSteps.join(', ') || 'None'}`);
+            logger.info(`   Pending: ${previousSummary.pendingSteps.join(', ') || 'None'}`);
+            logger.info(`   Files: ${previousSummary.keyFiles.length}`);
+            logger.info('');
+        }
+
+        // Start new session with project context
+        this.teamContext = initTeamContext(projectRoot, task);
+
+        // Try to load latest session context
+        const lastSession = sessionManager.loadLatest();
+        if (lastSession) {
+            // Merge relevant context
+            const prevCtx = lastSession.getFullContext();
+            this.teamContext.addFinding('lastSession', {
+                task: prevCtx.currentTask,
+                completed: Object.entries(prevCtx.knowledge.taskProgress)
+                    .filter(([, done]) => done)
+                    .map(([step]) => step),
+                files: prevCtx.knowledge.codebaseInfo.relevantFiles.slice(0, 10),
+            });
+            logger.info('✅ Previous context restored\n');
+        }
+
+        logger.info(`🚀 Team Session Started: "${task}"\n`);
+        return { teamContext: this.teamContext, previousSummary };
+    }
+
+    /**
+     * End session and save summary
+     */
+    endSession(): void {
+        if (this.teamContext) {
+            const sessionManager = getSessionManager();
+            if (sessionManager) {
+                sessionManager.save(this.teamContext);
+                sessionManager.generateSummary(this.teamContext);
+            }
+            logger.info('👋 Session ended and saved');
+        }
     }
 
     /**

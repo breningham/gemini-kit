@@ -194,6 +194,63 @@ export class SessionManager {
 
         return this.load(firstSession.id);
     }
+
+    /**
+     * Generate and save summary of current session
+     */
+    generateSummary(teamCtx: TeamContextManager): SessionSummary {
+        const fullContext = teamCtx.getFullContext();
+        const { taskProgress, findings } = fullContext.knowledge;
+
+        const summary: SessionSummary = {
+            lastTask: fullContext.currentTask,
+            completedSteps: Object.entries(taskProgress)
+                .filter(([, done]) => done)
+                .map(([step]) => step),
+            pendingSteps: Object.entries(taskProgress)
+                .filter(([, done]) => !done)
+                .map(([step]) => step),
+            keyFiles: fullContext.knowledge.codebaseInfo.relevantFiles.slice(0, 10),
+            artifactCount: fullContext.artifacts.size,
+            messageCount: fullContext.messageLog.length,
+            findings: Object.keys(findings),
+            timestamp: new Date().toISOString(),
+        };
+
+        // Save summary to file
+        const summaryPath = join(this.sessionDir, 'latest-summary.json');
+        writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
+        logger.info('📋 Session summary saved');
+
+        return summary;
+    }
+
+    /**
+     * Get latest session summary
+     */
+    getLatestSummary(): SessionSummary | null {
+        const summaryPath = join(this.sessionDir, 'latest-summary.json');
+        if (!existsSync(summaryPath)) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(readFileSync(summaryPath, 'utf-8'));
+        } catch {
+            return null;
+        }
+    }
+}
+
+export interface SessionSummary {
+    lastTask: string;
+    completedSteps: string[];
+    pendingSteps: string[];
+    keyFiles: string[];
+    artifactCount: number;
+    messageCount: number;
+    findings: string[];
+    timestamp: string;
 }
 
 // Singleton for current project
@@ -210,3 +267,4 @@ export function initSessionManager(projectRoot: string): SessionManager {
     currentSessionManager = new SessionManager(projectRoot);
     return currentSessionManager;
 }
+
