@@ -153,23 +153,25 @@ Respond in the same language the user uses.`
             history.push({ role: 'user', content: trimmed });
 
             try {
-                logger.startSpinner('Thinking...');
+                // Use simple text instead of spinner (ora conflicts with readline)
+                process.stdout.write('\n⏳ Thinking...');
 
                 const response = await providerManager.generate(
                     history.map(m => ({ role: m.role, content: m.content }))
                 );
 
-                logger.stopSpinner();
+                // Clear thinking message
+                process.stdout.write('\r                    \r');
 
                 // Add assistant response
                 history.push({ role: 'assistant', content: response.content });
 
                 // Display response
-                console.log('\n🤖 Assistant:');
+                console.log('🤖 Assistant:');
                 console.log(response.content);
 
             } catch (error) {
-                logger.stopSpinner();
+                process.stdout.write('\r                    \r');
                 const message = error instanceof Error ? error.message : 'Unknown error';
                 logger.error(`Error: ${message}`);
             }
