@@ -5,7 +5,13 @@ All notable changes to Gemini-Kit will be documented in this file.
 ## [0.3.1] - 2024-12-13
 
 ### Added
-- **AI Router - Auto Agent Selection** ✨
+- **Beautiful CLI Interface** ✨ (ClaudeKit-style)
+  - Gradient text with `gradient-string`
+  - Animated spinners with `ora`
+  - Beautiful boxes with `boxen`
+  - Progress bars with `cli-progress`
+
+- **AI Router - Auto Agent Selection**
   - Analyzes task and automatically selects best agents
   - AI-powered workflow decision making
   - Fallback keyword matching for reliability

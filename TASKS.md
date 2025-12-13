@@ -8,8 +8,10 @@
 | Commands | 43+ | ✅ Complete |
 | Multi-model | 4 | ✅ Gemini, Claude, OpenAI, CLIProxyAPI |
 | Tests | 9 | ✅ All passing |
-| Build | 180KB | ✅ |
-| AI Router | 1 | ✅ NEW - Auto Agent Selection |
+| Build | 183KB | ✅ |
+| AI Router | 1 | ✅ Auto Agent Selection |
+| Beautiful CLI | ✅ | Gradients, Spinners, Boxes |
+
 
 ---
 
