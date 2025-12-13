@@ -1,15 +1,17 @@
 # Gemini-Kit: ClaudeKit-Style AI Development Assistant
 
-## 📊 Current Status: v0.3.0 ✅ COMPLETE
+## 📊 Current Status: v0.3.1 ✅ COMPLETE
 
 | Milestone | Status |
 |-----------|--------|
 | 15 Agents | ✅ Complete with Real Skills |
 | 43+ Commands | ✅ Complete |
 | Multi-Model | ✅ Gemini, Claude, OpenAI, CLIProxyAPI |
-| Agent Skills | ✅ Phase 1, 2, 3 Complete |
-| Build | 163KB |
+| Agent Skills | ✅ Level 1 + Level 2 Complete |
+| AI Router | ✅ NEW - Auto Agent Selection |
+| Build | 180KB |
 | Tests | 9/9 ✅ |
+
 
 ---
 

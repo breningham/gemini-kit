@@ -1,6 +1,6 @@
 # Gemini-Kit Tasks
 
-## 📊 Current Status: v0.3.0
+## 📊 Current Status: v0.3.1
 
 | Component | Count | Status |
 |-----------|-------|--------|
@@ -8,7 +8,8 @@
 | Commands | 43+ | ✅ Complete |
 | Multi-model | 4 | ✅ Gemini, Claude, OpenAI, CLIProxyAPI |
 | Tests | 9 | ✅ All passing |
-| Build | 163KB | ✅ |
+| Build | 180KB | ✅ |
+| AI Router | 1 | ✅ NEW - Auto Agent Selection |
 
 ---
 

@@ -2,6 +2,39 @@
 
 All notable changes to Gemini-Kit will be documented in this file.
 
+## [0.3.1] - 2024-12-13
+
+### Added
+- **AI Router - Auto Agent Selection** ✨
+  - Analyzes task and automatically selects best agents
+  - AI-powered workflow decision making
+  - Fallback keyword matching for reliability
+  - Like ClaudeKit's intelligent routing
+
+- **Project Context System** (like ClaudeKit)
+  - `ProjectContextManager` for project scanning
+  - `gk docs init` creates `docs/codebase-summary.md`
+  - All agents can access project context via `getProjectContext()`
+
+- **Level 1 Skills - All Agents Save to Files**:
+  - Researcher → `docs/research/`
+  - Brainstormer → `docs/brainstorm/`
+  - Copywriter → `docs/copy/`
+  - UI-UX-Designer → `docs/design/`
+  - Database-Admin → `docs/database/`
+  - Project-Manager → `docs/reports/`
+
+- **Level 2 Skills**:
+  - Scout: `buildDependencyGraph()` → `docs/analysis/`
+  - Code-Reviewer: `runSecurityScan()` via npm audit
+
+### Fixed
+- All 4 lint errors resolved
+- TypeScript type errors fixed
+
+### Changed
+- Build size: 180KB
+
 ## [0.2.2] - 2024-12-13
 
 ### Added

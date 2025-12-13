@@ -542,6 +542,74 @@ CHANGELOG.md                # NEW
 
 ---
 
+## Session 6 - 2024-12-13 10:42
+
+### 📌 Mục tiêu phiên
+- Upgrade ALL agent skills (Level 1 + Level 2)
+- Implement AI Router cho auto-agent selection
+- Implement Project Context System (như ClaudeKit)
+- Debug và fix toàn bộ lint errors
+
+### ✅ Đã hoàn thành
+
+1. **AI Router - Auto Agent Selection** ✨ (NEW!):
+   - `src/agents/ai-router.ts` - AI tự động chọn agents
+   - Phân tích task → chọn 1-4 agents → xác định skills
+   - Fallback keyword matching nếu AI fail
+   - Like ClaudeKit's intelligent routing
+
+2. **Project Context System**:
+   - `src/context/project-context.ts` - ProjectContextManager
+   - `gk docs init` tạo `docs/codebase-summary.md`
+   - Scan project: files, symbols, dependencies
+   - All agents can call `getProjectContext()`
+
+3. **All 15 Agents với Level 1 Skills** (File Saving):
+   - Planner → `plans/`
+   - Researcher → `docs/research/`
+   - Brainstormer → `docs/brainstorm/`
+   - Copywriter → `docs/copy/`
+   - UI-UX-Designer → `docs/design/`
+   - Database-Admin → `docs/database/`
+   - Project-Manager → `docs/reports/`
+   - Journal-Writer → `journals/`
+
+4. **Level 2 Skills**:
+   - Scout: `buildDependencyGraph()` → `docs/analysis/dependency-graph.json`
+   - Code-Reviewer: `runSecurityScan()` via npm audit
+
+5. **Full Debug & Lint Fix**:
+   - Fixed 4 lint errors: planner.ts, ai-router.ts, coder.ts, docs-manager.ts
+   - TypeScript clean ✅
+   - All tests passing ✅
+
+### 📁 Files đã tạo/sửa
+- `src/agents/ai-router.ts` (NEW)
+- `src/context/project-context.ts` (NEW)
+- `src/commands/docs.ts` - Use ProjectContextManager
+- `src/agents/base-agent.ts` - Add getProjectContext()
+- `src/agents/research/researcher.ts` - saveResearch()
+- `src/agents/creative/brainstormer.ts` - saveIdeas()
+- `src/agents/creative/copywriter.ts` - saveCopy()
+- `src/agents/creative/ui-ux-designer.ts` - saveDesign()
+- `src/agents/devops/database-admin.ts` - saveAnalysis()
+- `src/agents/documentation/project-manager.ts` - saveReport()
+- `src/agents/development/scout.ts` - buildDependencyGraph()
+- `src/agents/quality/code-reviewer.ts` - runSecurityScan()
+
+### 📊 Stats
+- **Build**: 180KB
+- **Tests**: 9/9 ✅
+- **Lint**: 0 errors ✅
+- **Commits**: 49b3d70, 4645dbd, 3b37c83, a366257
+
+### 🔜 Task tiếp theo
+- Add more unit tests for new skills
+- npm publish preparation
+- Dashboard UI improvements
+
+---
+
 <!-- Thêm session mới ở trên dòng này -->
 
 
