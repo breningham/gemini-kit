@@ -1,6 +1,6 @@
 /**
- * Chat Command - Interactive Chat Mode (như ClaudeKit)
- * Features: Conversation History, File Reading, Codebase Search
+ * Chat Command - Agentic Chat Mode (như ClaudeKit)
+ * Features: Conversation, File Reading, Agent Invocation
  */
 
 import { createInterface } from 'readline';
@@ -8,6 +8,9 @@ import { providerManager } from '../providers/index.js';
 import { logger } from '../utils/logger.js';
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
+import { cookCommand } from './cook.js';
+import { plannerAgent } from '../agents/development/planner.js';
+import { scoutAgent } from '../agents/development/scout.js';
 
 interface ChatMessage {
     role: 'user' | 'assistant' | 'system';
@@ -142,6 +145,54 @@ Respond in the same language the user uses.`
                 return;
             }
 
+            // @do command - run full cook workflow
+            if (trimmed.startsWith('@do ') || trimmed.startsWith('@cook ')) {
+                const task = trimmed.replace(/^@(do|cook)\s+/, '');
+                console.log(`\n🍳 Starting Cook workflow: "${task}"\n`);
+                rl.close();
+                await cookCommand(task);
+                return;
+            }
+
+            // @plan command - create plan only
+            if (trimmed.startsWith('@plan ')) {
+                const task = trimmed.replace(/^@plan\s+/, '');
+                console.log(`\n📋 Creating plan: "${task}"\n`);
+                try {
+                    plannerAgent.initialize({ currentTask: task, projectRoot: cwd, sharedData: {} });
+                    const result = await plannerAgent.execute();
+                    console.log('\n📋 Plan Result:');
+                    console.log(result.message);
+                    if (result.artifacts && result.artifacts.length > 0) {
+                        console.log(`\n📄 Saved to: ${result.artifacts[0]}`);
+                    }
+                    history.push({ role: 'assistant', content: `Created plan: ${result.message}` });
+                } catch (error) {
+                    const msg = error instanceof Error ? error.message : 'Unknown error';
+                    logger.error(`Plan failed: ${msg}`);
+                }
+                prompt();
+                return;
+            }
+
+            // @scout command - search codebase
+            if (trimmed.startsWith('@scout ')) {
+                const query = trimmed.replace(/^@scout\s+/, '');
+                console.log(`\n🔍 Scouting: "${query}"\n`);
+                try {
+                    scoutAgent.initialize({ currentTask: query, projectRoot: cwd, sharedData: {} });
+                    const result = await scoutAgent.execute();
+                    console.log('\n🔍 Scout Result:');
+                    console.log(result.message);
+                    history.push({ role: 'assistant', content: `Scout found: ${result.message}` });
+                } catch (error) {
+                    const msg = error instanceof Error ? error.message : 'Unknown error';
+                    logger.error(`Scout failed: ${msg}`);
+                }
+                prompt();
+                return;
+            }
+
             // Help
             if (trimmed.toLowerCase() === 'help' || trimmed === '?') {
                 showHelp();
@@ -186,11 +237,13 @@ Respond in the same language the user uses.`
 
 function showHelp(): void {
     console.log('\n📖 Commands:');
+    console.log('  @do <task>     - Run full workflow (plan → code → test)');
+    console.log('  @plan <task>   - Create plan only');
+    console.log('  @scout <query> - Search codebase with AI');
     console.log('  @file <path>   - Read a file');
-    console.log('  @search <term> - Search files');
+    console.log('  @search <term> - Search files by name');
     console.log('  @ls [dir]      - List directory');
-    console.log('  history        - Show chat history');
-    console.log('  clear          - Clear history');
+    console.log('  exit           - Exit chat\n');
     console.log('  exit           - Exit chat\n');
 }
 
