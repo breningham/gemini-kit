@@ -46,12 +46,14 @@ import { integratePolarCommand, integrateSePayCommand } from '../commands/integr
 // Other
 import { brainstormCommand } from '../commands/brainstorm.js';
 import { journalCommand } from '../commands/journal.js';
+import { chatCommand } from '../commands/chat.js';
 
 // Session
 import { sessionListCommand, sessionSaveCommand, sessionLoadCommand, sessionInfoCommand, sessionDeleteCommand } from '../commands/session.js';
 
 const program = new Command();
-program.name('gk').description('Gemini-Kit: ClaudeKit-style AI Assistant').version('0.1.0');
+program.name('gk').description('Gemini-Kit: ClaudeKit-style AI Assistant').version('0.3.2');
+
 
 // === CORE (10) ===
 program.command('cook <task>').description('All-in-one workflow').action(cookCommand);
@@ -126,9 +128,10 @@ const integrate = program.command('integrate').description('Integrations');
 integrate.command('polar').description('Polar.sh').action(integratePolarCommand);
 integrate.command('sepay').description('SePay.vn').action(integrateSePayCommand);
 
-// === OTHER (2) ===
+// === OTHER (3) ===
 program.command('brainstorm <topic>').description('Ideas').action(brainstormCommand);
 program.command('journal').description('Journal').action(journalCommand);
+program.command('chat').description('Interactive chat with AI').action(chatCommand);
 
 // === SESSION (5) ===
 const session = program.command('session').description('Session management');
