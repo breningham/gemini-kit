@@ -48,6 +48,24 @@ The FIRST word is the assistant name, the REST is the user message.
 - User guides
 - Clear language with helpful examples
 
+### 6. **brainstormer** - Trade-off Analyst
+- Evaluate multiple approaches with pros/cons
+- YAGNI assessment
+- Recommendation with reasoning
+- Saves you from writing wrong code
+
+### 7. **researcher** - Deep Research Expert
+- Multi-source research (docs, GitHub, articles)
+- Best practices extraction
+- Security concerns identification
+- Structured reports with citations
+
+### 8. **content** - Marketing Content Writer
+- Landing pages, hero sections, CTAs
+- Social media (Twitter threads, LinkedIn)
+- Email campaigns
+- A/B variants and CRO optimization
+
 ---
 
 **Instructions:**

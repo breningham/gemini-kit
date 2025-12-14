@@ -1,13 +1,29 @@
 description = "Tạo kế hoạch triển khai chi tiết (Planner Agent)"
 
 prompt = """
-# 📋 Planner Agent
+# 📋 PLANNER AGENT
 
-Tạo kế hoạch triển khai chi tiết cho:
+Tạo kế hoạch triển khai cho:
 
 **Task:** {{args}}
 
-## Analysis Required
+## MODE DETECTION
+Dựa vào input, chọn mode phù hợp:
+
+### Mode: STANDARD (default)
+Khi user chỉ cần một plan.
+
+### Mode: TWO APPROACHES
+Khi input chứa "two", "2", "compare", "vs", "or":
+Tạo 2 approaches khác nhau với comparison table.
+
+### Mode: RESEARCH-FIRST
+Khi input chứa "research", "investigate", "explore":
+Research trước, plan sau.
+
+---
+
+## STANDARD PLAN
 
 ### 1. Hiểu Yêu Cầu
 - Cần làm gì chính xác?
@@ -15,26 +31,72 @@ Tạo kế hoạch triển khai chi tiết cho:
 - Constraints?
 
 ### 2. Phân Tích Codebase
-Hãy sử dụng các tools để:
-- Đọc package.json để hiểu dependencies
+Sử dụng tools để:
+- Đọc package.json
 - Liệt kê cấu trúc thư mục
-- Xem các files quan trọng
+- Xem files quan trọng
 
 ### 3. Kế Hoạch Triển Khai
 
-Cung cấp:
-1. **Overview** - Mô tả ngắn cách tiếp cận
-2. **Files** - Danh sách files cần tạo/sửa
-3. **Steps** - Hướng dẫn từng bước
-4. **Challenges** - Rủi ro và cách giảm thiểu
-5. **Success Criteria** - Cách verify hoàn thành
-6. **Effort** - Ước tính thời gian
+| Section | Content |
+|---------|---------|
+| **Overview** | Mô tả approach |
+| **Files** | Danh sách files cần tạo/sửa |
+| **Steps** | Hướng dẫn từng bước với time estimate |
+| **Challenges** | Rủi ro và mitigation |
+| **Success Criteria** | Cách verify |
+| **Effort** | Total time estimate |
 
 ### 4. Dependencies
 - External packages
 - Internal modules
 - Thứ tự triển khai
 
-## Output
-Markdown với headers và bullet points rõ ràng.
+### 5. Rollback Plan
+Cách revert nếu có vấn đề.
+
+### 6. Security Checklist
+- [ ] Input validation
+- [ ] Auth checks
+- [ ] Rate limiting
+
+---
+
+## TWO APPROACHES MODE
+(Khi cần so sánh)
+
+### Approach A: [Name]
+[Standard plan sections]
+
+### Approach B: [Name]
+[Standard plan sections]
+
+### Comparison Table
+| Criteria | Approach A | Approach B |
+|----------|------------|------------|
+| Effort | ⭐⭐⭐ | ⭐⭐ |
+| Risk | ⭐ | ⭐⭐ |
+| Scalability | ⭐⭐ | ⭐⭐⭐ |
+
+### Recommendation
+[Which to choose and why]
+
+---
+
+## OUTPUT
+Save to: `plans/[feature-name]-YYYYMMDD.md`
+
+## NEXT STEPS
+```bash
+# Ready? Run:
+/cook @plans/[your-plan].md
+```
 """
+
+# ---
+# USAGE:
+# /plan Add user authentication
+# /plan:two REST vs GraphQL for mobile app
+# /plan research WebSocket best practices then implement
+# ---
+
