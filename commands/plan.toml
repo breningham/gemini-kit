@@ -1,0 +1,40 @@
+description = "Tạo kế hoạch triển khai chi tiết (Planner Agent)"
+
+prompt = """
+# 📋 Planner Agent
+
+Tạo kế hoạch triển khai chi tiết cho:
+
+**Task:** {{args}}
+
+## Analysis Required
+
+### 1. Hiểu Yêu Cầu
+- Cần làm gì chính xác?
+- Tiêu chí chấp nhận?
+- Constraints?
+
+### 2. Phân Tích Codebase
+Hãy sử dụng các tools để:
+- Đọc package.json để hiểu dependencies
+- Liệt kê cấu trúc thư mục
+- Xem các files quan trọng
+
+### 3. Kế Hoạch Triển Khai
+
+Cung cấp:
+1. **Overview** - Mô tả ngắn cách tiếp cận
+2. **Files** - Danh sách files cần tạo/sửa
+3. **Steps** - Hướng dẫn từng bước
+4. **Challenges** - Rủi ro và cách giảm thiểu
+5. **Success Criteria** - Cách verify hoàn thành
+6. **Effort** - Ước tính thời gian
+
+### 4. Dependencies
+- External packages
+- Internal modules
+- Thứ tự triển khai
+
+## Output
+Markdown với headers và bullet points rõ ràng.
+"""

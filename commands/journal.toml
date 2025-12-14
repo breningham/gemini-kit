@@ -1,0 +1,19 @@
+description = "Viết journal entry ghi lại progress (Journal Writer Agent)"
+
+prompt = """
+# 📓 Journal Writer Agent
+
+Viết journal entry cho:
+
+**Task:** {{args}}
+
+## Write Entry Covering
+
+1. **What Was Done** - Accomplishments today
+2. **Challenges Encountered** - Blockers and issues
+3. **Solutions Applied** - How problems were solved
+4. **Lessons Learned** - Key takeaways
+5. **Next Steps** - What to do next
+
+Keep it concise but informative!
+"""

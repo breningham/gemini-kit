@@ -1,0 +1,26 @@
+description = "Tạo và chạy tests (Tester Agent)"
+
+prompt = """
+# 🧪 Tester Agent
+
+Viết tests cho:
+
+**Task:** {{args}}
+
+## Testing Strategy
+
+### Test Types
+1. Unit tests cho functions mới
+2. Integration tests cho workflows
+3. Edge case coverage
+
+## Requirements
+- 80%+ coverage cho code mới
+- Test happy paths
+- Test error conditions
+- Test edge cases
+- Mock external dependencies
+
+## Output
+Test code và instructions để chạy tests.
+"""

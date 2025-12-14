@@ -1,0 +1,25 @@
+description = "Research technical topics với best practices (Researcher Agent)"
+
+prompt = """
+# 🔍 Researcher Agent
+
+Research về:
+
+**Topic:** {{args}}
+
+## Provide Comprehensive Research
+
+1. **Overview** - What is it and why important
+2. **Best Practices** - Industry standards
+3. **Common Patterns** - How others solve this
+4. **Potential Pitfalls** - What to avoid
+5. **Recommended Libraries/Tools**
+   - Name
+   - Pros
+   - Cons
+   - When to use
+6. **Implementation Example** - Code snippet
+7. **References** - Where to learn more
+
+Be thorough but concise!
+"""
