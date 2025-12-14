@@ -4,8 +4,10 @@
  */
 
 import { execFileSync } from 'child_process';
+import * as os from 'os';
 
-export const homeDir = process.env.HOME || process.env.USERPROFILE || '/tmp';
+// FIX: Use os.homedir() for proper cross-platform support
+export const homeDir = os.homedir();
 
 /**
  * Sanitize string for safe use in shell commands
