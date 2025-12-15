@@ -46,10 +46,60 @@ Confidence: High
 ```
 
 ### If "types":
-Fix TypeScript errors:
-1. Run `tsc --noEmit` to find errors
-2. Analyze each error
-3. Suggest or apply fixes
+Fix TypeScript/Dart type errors with full workflow:
+
+**Step 1: Type Check Execution**
+- Detect project type (TypeScript or Dart)
+- Run type checker:
+```bash
+# TypeScript
+tsc --noEmit
+npm run typecheck
+
+# Dart/Flutter
+dart analyze
+flutter analyze
+```
+
+**Step 2: Error Analysis**
+- Categorize errors by type/severity
+- Identify patterns across errors
+- Prioritize by dependency order
+
+**Step 3: Fix Implementation**
+- Add proper type annotations
+- Fix type mismatches
+- Update function signatures
+- Resolve generic constraints
+
+**Step 4: Verification Loop**
+- Re-run type checker after fixes
+- Continue until clean type check
+- Ensure no regressions
+
+**Common Fix Patterns:**
+
+| Pattern | Before | After |
+|---------|--------|-------|
+| Null Safety | `user.profile.name` | `user.profile?.name ?? 'Unknown'` |
+| Type Annotation | `function(items)` | `function(items: Item[]): number` |
+| Generic Constraint | `<T>` | `<T extends {id: string}>` |
+| Union Type | direct access | `typeof value === 'string' ? ...` |
+
+**Quick Fixes:**
+```typescript
+// Null safety
+user.profile?.name ?? 'Unknown'
+
+// Type annotation
+function calc(items: CartItem[]): number { }
+
+// Generic constraint
+function findById<T extends {id: string}>(items: T[], id: string): T | undefined
+
+// Type guard
+if (typeof value === 'string') { value.toUpperCase() }
+```
 
 ### If "hard":
 Complex fix mode for difficult bugs (10-15 min):
