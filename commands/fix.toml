@@ -20,10 +20,30 @@ content = """
 Check the first word of "{{args}}":
 
 ### If "fast":
-Run quick automated fixes:
-1. ESLint with `--fix` flag
-2. Prettier formatting
-3. Report what was fixed
+Quick fix mode - minimal analysis, direct action:
+
+**Step 1: Quick Analysis**
+- Read issue description
+- Identify location from context
+- Minimal codebase scan
+
+**Step 2: Direct Fix**
+- ESLint with `--fix` flag
+- Prettier formatting
+- Apply obvious fixes
+
+**Step 3: Testing**
+- Run relevant tests
+- Validate fix works
+- Check for regressions
+
+**Step 4: Summary Report**
+```
+✓ Files fixed: 3
+✓ Tests: Passing
+✓ Lint: Clean
+Confidence: High
+```
 
 ### If "types":
 Fix TypeScript errors:
