@@ -176,6 +176,46 @@ git add src/components/*
 
 ---
 
+## PR FORMAT (for /git pr)
+
+### Auto-generated PR Description:
+```markdown
+## Summary
+[Brief description of changes]
+
+## Changes Made
+- ✅ Feature: [description]
+- 🐛 Fix: [description]
+- ♻️ Refactor: [description]
+
+## Files Changed
+- `src/file1.ts` - [description]
+- `src/file2.ts` - [description]
+
+## Test Plan
+- [ ] Unit tests pass
+- [ ] Manual testing on localhost
+- [ ] No TypeScript errors
+- [ ] No lint warnings
+
+## Screenshots (if UI changes)
+[Attach screenshots]
+
+## Checklist
+- [ ] Code follows project conventions
+- [ ] Documentation updated
+- [ ] No breaking changes
+```
+
+### Usage:
+```bash
+/git pr                     # PR to main
+/git pr develop            # PR to develop
+/git pr --draft            # Draft PR
+```
+
+---
+
 ## SAFETY RULES
 - ✅ Always review before commit
 - ✅ Conventional commits format
