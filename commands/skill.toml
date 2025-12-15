@@ -310,6 +310,70 @@ Estimated: 5,000 tokens (40.5% reduction)
 
 ---
 
+## OPTIMIZE:AUTO MODE
+
+When input starts with "optimize:auto" or "optimize-auto":
+
+**Syntax:**
+```bash
+/skill optimize:auto [skill-name] "[goal]"
+/skill optimize:auto mongodb "reduce tokens"
+```
+
+### Difference from /skill optimize:
+| Feature | optimize | optimize:auto |
+|---------|----------|---------------|
+| Approval | ✅ Required | ❌ No |
+| Backup | ❌ | ✅ Auto |
+| Rollback | ❌ | ✅ Auto |
+
+### 6-Step Workflow:
+
+**Step 1: Create Backup**
+```
+Backup: ~/.gemini-kit/skills/mongodb/.backup-251215-2110/
+```
+
+**Step 2: Analyze Goal**
+- Find optimization opportunities
+
+**Step 3: Apply Changes**
+- No approval needed
+- Apply immediately
+
+**Step 4: Validate Syntax**
+- Check skill still valid
+
+**Step 5: Test Activation**
+- Verify skill loads
+
+**Step 6: Report or Rollback**
+- Success: Report changes
+- Failure: Auto rollback from backup
+
+**Output:**
+```
+✓ Backup created
+✓ Analyzed: 3 opportunities found
+✓ Applied: 3 changes
+  - Consolidated docs: -800 tokens
+  - Progressive disclosure: -1,200 tokens
+  - Compressed instructions: -400 tokens
+✓ Syntax valid
+✓ Activation successful
+
+Result: 6,400 → 4,000 tokens (37.5% saved)
+```
+
+**Rollback (if error):**
+```
+❌ Activation failed
+✓ Rolling back from backup...
+✓ Restored original skill
+```
+
+---
+
 Now process: "{{args}}"
 """
 
