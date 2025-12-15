@@ -13,6 +13,7 @@ Git operation:
 |---------|--------|------|
 | `/git cm` | Commit with auto-message | 10-15s |
 | `/git cp` | Commit + Push | 15-20s |
+| `/git merge` | Merge branches | 10-20s |
 | `/git status` | Review changes | 5s |
 | `/git pr` | Generate PR summary | 30s |
 
@@ -122,6 +123,18 @@ git add src/auth/*
 
 git add src/components/*
 /git cm              # Separate UI changes
+```
+
+### Merge Branches
+```bash
+/git merge feature-branch into main
+
+# Workflow:
+# 1. Checkout target branch
+# 2. Merge source branch
+# 3. Resolve conflicts if any
+# 4. Commit merge
+# 5. Push if requested
 ```
 
 ---
