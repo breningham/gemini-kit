@@ -181,6 +181,64 @@ Validation: PASSED
 
 ---
 
+## ADD MODE
+
+When input starts with "add":
+
+**Syntax:**
+```bash
+/skill add [skill-name] [reference]
+/skill add mongodb https://docs.mongodb.com/llms.txt
+/skill add stripe /path/to/examples.md
+```
+
+### Reference Types:
+| Type | Example |
+|------|---------|
+| URL | `https://docs.stripe.com/api` |
+| File | `/path/to/reference.md` |
+| Script | `validate-webhook.sh` |
+
+### 5-Step Workflow:
+
+**Step 1: Validate Skill**
+- Check skill exists
+- Load current skill structure
+
+**Step 2: Analyze Reference Type**
+- Detect URL/File/Script
+- Validate format
+
+**Step 3: Process Reference**
+- URLs: Fetch and extract content
+- Files: Read and validate
+- Scripts: Create executable
+
+**Step 4: Update Skill**
+- Add reference to skill file
+- Structure for token efficiency
+- Core content vs on-demand
+
+**Step 5: Test Activation**
+- Verify skill still loads
+- Test new references accessible
+
+**Output:**
+```
+Adding reference to mongodb skill...
+✓ Skill found: ~/.gemini-kit/skills/mongodb.md
+✓ Reference: https://docs.mongodb.com/llms.txt
+✓ Content: 12KB, 45 endpoints
+✓ Updated: mongodb.md
+
+New sections added:
+- API Endpoints (45)
+- Configuration Options (12)
+- Examples (8)
+```
+
+---
+
 Now process: "{{args}}"
 """
 
