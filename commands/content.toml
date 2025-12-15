@@ -43,14 +43,58 @@ Dựa vào context, tạo content type phù hợp:
 5. **Follow-up Sequence**
 
 ### CRO ANALYSIS (if analyzing existing page)
-⚠️ **Conversion Blockers:**
-- [Issue 1] → [Fix]
-- [Issue 2] → [Fix]
 
-✅ **Improvements:**
-- Psychological triggers
-- Layout changes
-- Copy improvements
+When input contains "cro" or "optimize" or "conversion":
+
+**5-Step CRO Workflow:**
+
+**Step 1: Content Analysis**
+- Read existing content (file, URL, description)
+- Identify conversion goals (signup, purchase, download)
+- Analyze current messaging and CTAs
+- Map user journey and friction points
+
+**Step 2: Psychological Analysis**
+| Trigger | Check |
+|---------|-------|
+| Loss Aversion | "Don't miss out..." |
+| Social Proof | "Join 10,000+ users" |
+| Scarcity | "Only 5 left" |
+| Urgency | "Offer ends today" |
+| Authority | "Trusted by Fortune 500" |
+| Reciprocity | "Free guide included" |
+
+**Step 3: CRO Audit**
+| Element | Check |
+|---------|-------|
+| Headlines | Clear value proposition? |
+| CTAs | Action-oriented? Visible? |
+| Social Proof | Testimonials? Reviews? |
+| Trust | Badges? Guarantees? |
+| Mobile | Responsive? Fast? |
+
+**Step 4: Optimization Recommendations**
+- 3-5 headline variations
+- Improved CTAs
+- Added psychological triggers
+- Enhanced social proof
+
+**Step 5: A/B Testing Strategy**
+```
+Test Plan:
+- Control: Current version
+- Variation A: [headline change]
+- Variation B: [CTA change]
+
+Metrics: Conversion rate, CTR, Time on page
+Sample size: [calculate]
+Expected lift: [predict]
+```
+
+**CRO Frameworks:**
+- AIDA: Attention → Interest → Desire → Action
+- PAS: Problem → Agitation → Solution
+- Before-After-Bridge
 
 ## PSYCHOLOGICAL PRINCIPLES
 Apply khi viết:
