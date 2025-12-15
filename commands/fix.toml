@@ -161,10 +161,45 @@ Fix UI/styling issues:
 3. Suggest improvements
 
 ### If "ci":
-Fix CI/CD issues:
-1. Analyze CI config files
-2. Check common issues
-3. Suggest fixes
+Fix CI/CD failures with full analysis:
+
+**Step 1: Log Retrieval**
+- Use `gh run view --log-failed` to fetch logs
+- Parse error messages and stack traces
+- Identify failed steps
+```bash
+gh run view <run-id> --log-failed
+```
+
+**Step 2: Error Analysis**
+- Categorize failures (tests, build, lint, deploy)
+- Identify root causes
+- Distinguish flaky vs real failures
+- Map errors to files/lines
+
+**Step 3: Solution Research**
+- Search for similar CI issues
+- Review GitHub Actions docs
+- Check for known action issues
+
+**Step 4: Implementation**
+- Fix code issues (if code problem)
+- Update workflow config (if CI config)
+- Add missing dependencies
+- Adjust environment settings
+
+**Step 5: Verification**
+- Run tests locally
+- Validate workflow syntax: `actionlint`
+- Suggest manual verification
+
+**Common CI Failures:**
+| Issue | Solution |
+|-------|----------|
+| Dependency lock | `npm ci` instead of `npm install` |
+| Node version | Specify in `.nvmrc` |
+| Test timeout | Increase timeout limit |
+| Missing secrets | Check repo secrets |
 
 ### If "logs":
 Analyze log files:
