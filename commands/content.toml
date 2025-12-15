@@ -112,6 +112,83 @@ Ready to use, không cần chỉnh sửa.
 Suggested metrics to track:
 - Click-through rate target
 - Conversion rate target
+
+---
+
+## ENHANCE MODE
+
+When input contains "enhance" or "improve" or "rewrite":
+
+**4-Step Enhancement Workflow:**
+
+**Step 1: Content Analysis**
+- Read existing content (file, URL, description)
+- Identify content type (blog, docs, marketing)
+- Detect brand voice and tone
+
+**Step 2: Multi-Dimensional Audit**
+| Dimension | Check |
+|-----------|-------|
+| Clarity | Message clear? Easy to understand? |
+| Impact | Engages and persuades? |
+| SEO | Optimized for search? |
+| Readability | Easy to read and scan? |
+| Grammar | Errors? Awkward phrasing? |
+| Structure | Well-organized? |
+
+**Step 3: Enhancement Recommendations**
+- Clearer headlines/subheadings
+- Stronger opening/closing
+- Improved transitions
+- Better word choices
+- SEO keyword integration
+
+**Step 4: Revised Content**
+- Original structure preserved
+- Brand voice maintained
+- Before/after comparison
+
+**Common Improvements:**
+```
+# Remove filler words
+Before: "In order to achieve success..."
+After: "To succeed..."
+
+# Strengthen verbs
+Before: "We can help you get better results"
+After: "We boost your results"
+
+# Active voice
+Before: "The report was written by the team"
+After: "The team wrote the report"
+```
+
+**Readability Targets:**
+| Content Type | Flesch Score |
+|--------------|--------------|
+| Marketing | 60-70 |
+| Blog | 50-60 |
+| Technical | 40-50 |
+| Legal | 30-40 |
+
+**Output:**
+```markdown
+## Enhancement Report
+
+### Before
+[Original content]
+
+### After
+[Enhanced content]
+
+### Changes Made
+- [Change 1]
+- [Change 2]
+
+### Metrics Improvement
+- Readability: 45 → 62
+- Word count: 500 → 420
+```
 """
 
 # ---
