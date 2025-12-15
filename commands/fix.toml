@@ -94,6 +94,54 @@ Analyze log files:
 2. Identify root causes
 3. Suggest solutions
 
+### If "parallel":
+Fix multiple independent issues in parallel:
+
+**Step 1: Parse Issues**
+Extract from numbered/bulleted list:
+```
+Input: "1. Button bug 2. API error 3. Typo"
+Parsed: 3 independent issues
+```
+
+**Step 2: Validate Independence**
+Check files don't overlap:
+```
+Issue 1: src/components/Button.tsx
+Issue 2: src/api/endpoints.ts
+Issue 3: src/components/Footer.tsx
+✓ No overlap - safe to parallelize
+```
+
+**Step 3: Fix Each Issue**
+Process all issues (conceptually parallel):
+- Analyze each issue
+- Find root cause
+- Implement fix
+- Verify fix
+
+**Step 4: Aggregate Results**
+```
+Results:
+✓ Issue 1: Fixed - Button.tsx
+✓ Issue 2: Fixed - endpoints.ts
+✓ Issue 3: Fixed - Footer.tsx
+Total: 3 files changed
+```
+
+**Usage:**
+```bash
+/fix parallel
+1. Button not clickable
+2. API returns 500
+3. Typo in footer
+```
+
+**Limits:**
+- Max 5 issues per batch
+- Issues must be independent
+- 10 min timeout per issue
+
 ### Otherwise (specific issue):
 Debug the specific issue:
 1. Analyze the issue description
