@@ -155,10 +155,61 @@ Implementing...
 ```
 
 ### If "ui":
-Fix UI/styling issues:
-1. Check CSS/Tailwind usage
-2. Check responsive design
-3. Suggest improvements
+Fix UI/styling issues with visual analysis:
+
+**Step 1: Visual Analysis**
+- Analyze screenshot (if provided)
+- Extract layout, colors, spacing
+- Identify visual inconsistencies
+
+**Step 2: Code Location**
+- Find relevant component files
+- Identify CSS/styling files
+- Locate responsive breakpoints
+
+**Step 3: Root Cause Identification**
+- Analyze CSS rules
+- Check responsive design
+- Identify conflicts
+
+**Step 4: Fix Implementation**
+- Update styles
+- Adjust layouts
+- Fix responsive issues
+
+**Step 5: Visual Validation**
+- Suggest manual testing steps
+- Recommend browser testing
+
+**Common UI Issues:**
+
+| Type | Examples |
+|------|----------|
+| Layout | Misalignment, overflow, spacing |
+| Responsive | Mobile breaks, tablet overlap |
+| Visual | Z-index, colors, animations |
+| Interaction | Click/touch, hover, focus |
+
+**Quick Fixes:**
+```css
+/* Flexbox alignment */
+display: flex;
+align-items: center;
+justify-content: center;
+
+/* Responsive width */
+width: 100%;
+max-width: 1200px;
+
+/* Z-index stacking */
+position: relative;
+z-index: 10;
+
+/* Text overflow */
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+```
 
 ### If "ci":
 Fix CI/CD failures with full analysis:
