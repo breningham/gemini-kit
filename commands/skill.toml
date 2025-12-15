@@ -1,0 +1,134 @@
+description = "Tạo skill mới từ documentation, llms.txt, hoặc GitHub repo"
+
+prompt = """
+# 🎯 SKILL CREATOR
+
+Create new skill:
+
+**Input:** {{args}}
+
+## INPUT TYPES
+
+| Type | Example |
+|------|---------|
+| Natural language | `/skill create MongoDB integration skill` |
+| llms.txt URL | `/skill create https://docs.example.com/llms.txt` |
+| GitHub repo | `/skill create https://github.com/org/repo` |
+
+---
+
+## 4-PHASE WORKFLOW
+
+### Phase 1: Research (2-3 min)
+- Fetch documentation (llms.txt, GitHub, web)
+- Analyze domain knowledge required
+- Identify key concepts and patterns
+- Map out skill structure
+- Research best practices
+
+### Phase 2: Implementation (3-5 min)
+- Write skill prompt file
+- Structure knowledge sections
+- Create usage examples
+- Define when to use skill
+- Include best practices
+
+### Phase 3: Review (1-2 min)
+- Validate skill structure
+- Check completeness
+- Verify examples work
+- Ensure clear instructions
+
+### Phase 4: Evaluation (1 min)
+- Test skill activation
+- Verify skill prompt loads
+- Check examples are clear
+
+---
+
+## SKILL FILE STRUCTURE
+
+Create skill file at: `~/.gemini-kit/skills/[skill-name].md`
+
+```markdown
+# [Skill Name] Skill
+
+## When to Use
+- [Condition 1]
+- [Condition 2]
+
+## Key Concepts
+
+### [Topic 1]
+[Knowledge content]
+
+### [Topic 2]
+[Knowledge content]
+
+## Examples
+
+### Example 1: [Scenario]
+[Step-by-step example]
+
+### Example 2: [Scenario]
+[Step-by-step example]
+
+## Best Practices
+- [Practice 1]
+- [Practice 2]
+
+## Common Patterns
+[Code patterns and templates]
+
+## Troubleshooting
+| Issue | Solution |
+|-------|----------|
+| [Issue 1] | [Solution 1] |
+```
+
+---
+
+## COMMON SKILL TYPES
+
+| Type | Examples |
+|------|----------|
+| Framework | React, Vue, Next.js, Flutter |
+| Cloud | AWS, GCP, Azure, Vercel |
+| Database | MongoDB, PostgreSQL, Redis |
+| Tools | Docker, Kubernetes, Terraform |
+| Domain | Auth, Payment, Email, AI/ML |
+
+---
+
+## OUTPUT FILES
+
+After creation:
+1. **Skill file:** `~/.gemini-kit/skills/[name].md`
+2. **Activation:** Skill auto-activates on matching keywords
+
+---
+
+## USAGE EXAMPLES
+
+```bash
+# From description
+/skill create MongoDB integration with Node.js
+
+# From llms.txt
+/skill create https://docs.stripe.com/llms.txt
+
+# From GitHub
+/skill create https://github.com/prisma/prisma
+```
+
+---
+
+Now process: "{{args}}"
+"""
+
+# ---
+# USAGE:
+# /skill create [description]     - Create from description
+# /skill create [llms.txt URL]    - Create from llms.txt
+# /skill create [github URL]      - Create from GitHub repo
+# ---
