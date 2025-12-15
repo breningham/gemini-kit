@@ -11,11 +11,41 @@ Review request:
 
 | Scope | Trigger | Mode |
 |-------|---------|------|
+| **Codebase** | "codebase", "full", "all" | Full codebase review |
 | **Directory** | path ends with `/` | Review all files in dir |
 | **Feature** | feature name | Review related files |
 | **Security** | "security", "audit" | OWASP compliance |
 | **Types** | "types", "any" | TypeScript audit |
 | **Performance** | "performance", "slow" | N+1, indexes |
+
+---
+
+## CODEBASE MODE (Full Review)
+
+When triggered with "codebase"/"full"/"all":
+
+### 1. Research Phase
+- Scan entire project structure
+- Identify key files and patterns
+- Detect frameworks and dependencies
+
+### 2. Code Review Phase
+- Check all source files
+- Identify issues, duplicates, vulnerabilities
+- Generate severity-categorized findings
+
+### 3. Planning Phase
+Create improvement plan:
+```
+plans/YYYYMMDD-review/
+├── plan.md           # Overview
+└── phase-XX-name.md  # Detailed fixes
+```
+
+### 4. Final Report
+- Summary of all findings
+- Prioritized fix recommendations
+- Next steps with commands
 
 ---
 
