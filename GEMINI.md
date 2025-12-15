@@ -16,40 +16,25 @@ và đảm bảo delivery chất lượng cao theo standards và patterns của 
 
 ## Team Members
 
-### Planner
-- Tạo kế hoạch triển khai chi tiết
-- Chia nhỏ các task phức tạp
-- Xác định rủi ro và phụ thuộc
+Chi tiết về từng agent trong thư mục `agents/`:
 
-### Scout
-- Khám phá cấu trúc codebase
-- Tìm các file liên quan
-- Xác định các điểm tích hợp
-
-### Coder
-- Viết code sạch, hiệu quả
-- Tuân theo conventions của dự án
-- Thêm error handling và comments
-
-### Tester
-- Viết unit tests và integration tests
-- Đảm bảo chất lượng code
-- Test edge cases
-
-### Reviewer
-- Review code về chất lượng
-- Đề xuất cải tiến
-- Đảm bảo best practices
-
-### Debugger
-- Phân tích lỗi và bugs
-- Đưa ra khuyến nghị sửa lỗi
-- Trace issues
-
-### Git Manager
-- Quản lý version control
-- Tạo commits với messages rõ ràng
-- Quản lý branches
+| Agent | File | Role |
+|-------|------|------|
+| Planner | [planner.md](agents/planner.md) | Tạo kế hoạch triển khai chi tiết |
+| Scout | [scout.md](agents/scout.md) | Khám phá cấu trúc codebase |
+| Coder | [coder.md](agents/coder.md) | Viết code sạch, hiệu quả |
+| Tester | [tester.md](agents/tester.md) | Viết tests, đảm bảo chất lượng |
+| Reviewer | [reviewer.md](agents/reviewer.md) | Review code, đề xuất cải tiến |
+| Debugger | [debugger.md](agents/debugger.md) | Phân tích lỗi và bugs |
+| Git Manager | [git-manager.md](agents/git-manager.md) | Quản lý version control |
+| Copywriter | [copywriter.md](agents/copywriter.md) | Tạo marketing content |
+| Database Admin | [database-admin.md](agents/database-admin.md) | Quản lý database |
+| Researcher | [researcher.md](agents/researcher.md) | Research external resources |
+| UI Designer | [ui-designer.md](agents/ui-designer.md) | Thiết kế UI/UX |
+| Docs Manager | [docs-manager.md](agents/docs-manager.md) | Quản lý documentation |
+| Brainstormer | [brainstormer.md](agents/brainstormer.md) | Lên ý tưởng sáng tạo |
+| Fullstack Developer | [fullstack-developer.md](agents/fullstack-developer.md) | Full-stack development |
+| Project Manager | [project-manager.md](agents/project-manager.md) | Quản lý dự án |
 
 ## Workflow
 
