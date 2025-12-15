@@ -239,6 +239,77 @@ New sections added:
 
 ---
 
+## OPTIMIZE MODE
+
+When input starts with "optimize":
+
+**Syntax:**
+```bash
+/skill optimize [skill-name] "[goal]"
+/skill optimize mongodb "reduce token usage by 40%"
+/skill optimize stripe "improve clarity"
+```
+
+### Optimization Goals:
+| Goal | Action |
+|------|--------|
+| Token reduction | Remove duplicates, compress |
+| Clarity | Better instructions |
+| Examples | Add/improve examples |
+| Progressive disclosure | On-demand loading |
+
+### 7-Step Workflow:
+
+**Step 1: Read Skill Files**
+- Load skill content
+- Count tokens
+
+**Step 2: Analyze Against Goal**
+- Find optimization opportunities
+- Identify duplicates, verbose text
+
+**Step 3: Create Plan**
+- Token reduction targets
+- Risk assessment
+
+**Step 4: Present to User**
+```
+OPTIMIZATION PLAN
+Skill: mongodb
+Goal: Reduce tokens by 40%
+
+Current: 8,400 tokens
+Target:  5,040 tokens
+
+Proposed Changes:
+1. Consolidate docs: -1,200 tokens
+2. Progressive disclosure: -1,400 tokens
+3. Compress instructions: -800 tokens
+
+Estimated: 5,000 tokens (40.5% reduction)
+```
+
+**Step 5: Wait for Approval**
+- User confirms changes
+
+**Step 6: Execute**
+- Apply optimizations
+- Update skill file
+
+**Step 7: Test Optimized Skill**
+- Verify skill still works
+- Count new token usage
+
+**Output:**
+```
+✓ Optimized: mongodb skill
+  Before: 8,400 tokens
+  After:  5,000 tokens
+  Saved:  3,400 tokens (40.5%)
+```
+
+---
+
 Now process: "{{args}}"
 """
 
