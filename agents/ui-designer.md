@@ -106,9 +106,103 @@ Thiết kế giao diện và trải nghiệm người dùng.
 - Error message
 - Success state
 
+## Dark Mode Guidelines
+
+### CSS Variables Pattern
+```css
+:root {
+  /* Light mode (default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border: #374151;
+}
+```
+
+### Dark Mode Checklist
+- [ ] All colors use CSS variables
+- [ ] Images have dark variants or opacity
+- [ ] Shadows reduced in dark mode
+- [ ] Borders visible but subtle
+- [ ] Focus states visible
+- [ ] Charts/graphs adapted
+
+### Theme Toggle
+```typescript
+function toggleTheme() {
+  const current = document.documentElement.dataset.theme;
+  document.documentElement.dataset.theme = 
+    current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', current === 'dark' ? 'light' : 'dark');
+}
+```
+
+## Animation/Motion Guidelines
+
+### Animation Principles
+| Principle | Description |
+|-----------|-------------|
+| Duration | 150-300ms for micro, 300-500ms for page |
+| Easing | `ease-out` for enter, `ease-in` for exit |
+| Purpose | Guide attention, provide feedback |
+
+### Common Animations
+```css
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide up */
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Scale */
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+```
+
+### CSS Transition Utilities
+```css
+.transition-fast { transition: all 150ms ease-out; }
+.transition-base { transition: all 200ms ease-out; }
+.transition-slow { transition: all 300ms ease-out; }
+```
+
+### Reduce Motion
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
 ## Best Practices
 1. Design for accessibility first
 2. Use consistent spacing
 3. Follow platform conventions
 4. Test on real devices
 5. Get user feedback
+6. **Support dark mode from start**
+7. **Respect prefers-reduced-motion**
+
+## Related Agents
+- **Coder** - implement designs
+- **Fullstack Developer** - build complete UI
+

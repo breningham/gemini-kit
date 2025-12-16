@@ -126,9 +126,84 @@ MIT
 async function createUser(userData: UserInput): Promise<User>
 ```
 
+## Architecture Decision Records (ADR)
+
+### ADR Template
+```markdown
+# ADR-001: [Tiêu đề quyết định]
+
+## Status
+[Proposed | Accepted | Deprecated | Superseded by ADR-XXX]
+
+## Context
+[Mô tả vấn đề hoặc bối cảnh dẫn đến quyết định này]
+
+## Decision
+[Mô tả quyết định được đưa ra]
+
+## Consequences
+
+### Positive
+- [Lợi ích 1]
+- [Lợi ích 2]
+
+### Negative
+- [Trade-off 1]
+- [Trade-off 2]
+
+## Alternatives Considered
+1. **[Option A]**: [Lý do không chọn]
+2. **[Option B]**: [Lý do không chọn]
+```
+
+### ADR Example
+```markdown
+# ADR-002: Use PostgreSQL over MongoDB
+
+## Status
+Accepted
+
+## Context
+Cần chọn database cho user management system. 
+Data có quan hệ phức tạp (users, roles, permissions).
+
+## Decision
+Sử dụng PostgreSQL với Prisma ORM.
+
+## Consequences
+
+### Positive
+- Strong consistency với ACID
+- Powerful JOIN queries
+- Mature ecosystem
+
+### Negative
+- Schema migrations cần quản lý
+- Less flexible than NoSQL
+
+## Alternatives Considered
+1. **MongoDB**: Không phù hợp với relational data
+2. **MySQL**: Ít features hơn PostgreSQL
+```
+
+### ADR File Structure
+```
+docs/
+└── adr/
+    ├── 0001-use-typescript.md
+    ├── 0002-choose-postgresql.md
+    └── 0003-adopt-monorepo.md
+```
+
 ## Best Practices
 1. Keep docs up to date
 2. Include examples
 3. Use clear language
 4. Add visuals when helpful
 5. Test code examples
+6. **Document decisions with ADRs**
+
+## Related Agents
+- **Planner** - reference ADRs in plans
+- **Researcher** - research before decisions
+

@@ -2,30 +2,103 @@
 /**
  * BeforeTool Hook
  * Security validation - block secrets and dangerous commands
+ * 
+ * Enhanced with:
+ * - More secret patterns (Bearer, private keys, npm, pypi, Anthropic)
+ * - Path traversal prevention
+ * - Sensitive file blocking
  */
 
 // Secret patterns to detect
 const SECRET_PATTERNS = [
+    // Generic patterns
     /api[_-]?key\s*[:=]\s*['"]?[a-zA-Z0-9_-]{20,}['"]?/i,
     /password\s*[:=]\s*['"]?[^\s'"]{8,}['"]?/i,
     /secret\s*[:=]\s*['"]?[a-zA-Z0-9_-]{20,}['"]?/i,
-    /AKIA[0-9A-Z]{16}/,               // AWS Access Key
-    /ghp_[a-zA-Z0-9]{36}/,            // GitHub Personal Token
-    /sk-[a-zA-Z0-9]{48}/,             // OpenAI API Key
-    /AIza[a-zA-Z0-9_-]{35}/,          // Google API Key
-    /xox[baprs]-[a-zA-Z0-9-]{10,}/,   // Slack Token
+    /token\s*[:=]\s*['"]?[a-zA-Z0-9_-]{20,}['"]?/i,
+
+    // Cloud providers
+    /AKIA[0-9A-Z]{16}/,                           // AWS Access Key
+    /(?:aws)?[_-]?secret[_-]?access[_-]?key/i,    // AWS Secret Key label
+
+    // Code hosting & CI
+    /ghp_[a-zA-Z0-9]{36}/,                        // GitHub Personal Token
+    /gho_[a-zA-Z0-9]{36}/,                        // GitHub OAuth Token
+    /ghu_[a-zA-Z0-9]{36}/,                        // GitHub User Token
+    /ghr_[a-zA-Z0-9]{36}/,                        // GitHub Refresh Token
+    /github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}/, // GitHub Fine-grained PAT
+    /glpat-[a-zA-Z0-9\-_]{20,}/,                  // GitLab Personal Token
+
+    // AI providers
+    /sk-[a-zA-Z0-9]{48}/,                         // OpenAI API Key
+    /sk-proj-[a-zA-Z0-9]{48}/,                    // OpenAI Project Key
+    /sk-ant-[a-zA-Z0-9\-_]{95}/,                  // Anthropic API Key
+    /AIza[a-zA-Z0-9_-]{35}/,                      // Google API Key
+
+    // Communication
+    /xox[baprs]-[a-zA-Z0-9-]{10,}/,               // Slack Token
+    /https:\/\/hooks\.slack\.com\/services\//,    // Slack Webhook
+
+    // Package managers
+    /npm_[a-zA-Z0-9]{36}/,                        // NPM Token
+    /pypi-[a-zA-Z0-9]{50,}/,                      // PyPI Token
+
+    // Auth tokens
+    /Bearer\s+[a-zA-Z0-9_-]{20,}/i,               // Bearer tokens
+    /Authorization:\s*Bearer/i,                   // Auth header
+
+    // Private keys
+    /-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----/, // Private keys
+    /-----BEGIN\s+OPENSSH\s+PRIVATE\s+KEY-----/,  // OpenSSH keys
+    /-----BEGIN\s+EC\s+PRIVATE\s+KEY-----/,       // EC keys
+
+    // Database
+    /mongodb\+srv:\/\/[^:]+:[^@]+@/,              // MongoDB connection string
+    /postgres:\/\/[^:]+:[^@]+@/,                  // PostgreSQL connection string
+    /mysql:\/\/[^:]+:[^@]+@/,                     // MySQL connection string
 ];
 
 // Dangerous shell commands
 const DANGEROUS_COMMANDS = [
     'rm -rf /',
     'rm -rf ~',
+    'rm -rf *',
     'dd if=',
     ':(){:|:&};:',
     'mkfs.',
     'sudo rm',
     '> /dev/sda',
+    'chmod 777 /',
+    'wget | sh',
+    'curl | sh',
+    'curl | bash',
 ];
+
+// Dangerous file paths
+const DANGEROUS_PATHS = [
+    /\.\.\//,                           // Path traversal
+    /\/etc\/passwd/,
+    /\/etc\/shadow/,
+    /\/etc\/hosts/,
+    /~\/\.ssh/,
+    /\.ssh\/id_/,
+    /\.env$/,
+    /\.env\.local$/,
+    /\.env\.production$/,
+    /credentials/i,
+    /\.pem$/,
+    /\.key$/,
+];
+
+// Helper to deny with message
+function deny(reason, systemMessage) {
+    console.log(JSON.stringify({
+        decision: 'deny',
+        reason,
+        systemMessage: systemMessage || '⛔ Security check failed',
+    }));
+    process.exit(2);
+}
 
 async function main(input) {
     // Parse input safely
@@ -45,12 +118,24 @@ async function main(input) {
 
     for (const pattern of SECRET_PATTERNS) {
         if (pattern.test(content)) {
-            console.log(JSON.stringify({
-                decision: 'deny',
-                reason: '🚨 Potential secret/API key detected. Remove sensitive data before proceeding.',
-                systemMessage: '🔐 Secret scanner blocked operation',
-            }));
-            process.exit(2);
+            deny(
+                '🚨 Potential secret/API key detected. Remove sensitive data before proceeding.',
+                '🔐 Secret scanner blocked operation'
+            );
+        }
+    }
+
+    // Check file path for WriteFile operations
+    if (['WriteFile', 'Edit', 'write_file', 'edit'].includes(tool_name)) {
+        const filePath = tool_input?.file_path || tool_input?.path || '';
+
+        for (const pattern of DANGEROUS_PATHS) {
+            if (pattern.test(filePath)) {
+                deny(
+                    `🚫 Dangerous file path detected: ${filePath}`,
+                    '⛔ Path security check failed'
+                );
+            }
         }
     }
 
@@ -60,12 +145,10 @@ async function main(input) {
 
         for (const dangerous of DANGEROUS_COMMANDS) {
             if (cmd.includes(dangerous)) {
-                console.log(JSON.stringify({
-                    decision: 'deny',
-                    reason: `🚫 Dangerous command blocked: ${dangerous}`,
-                    systemMessage: '⛔ Dangerous command blocked',
-                }));
-                process.exit(2);
+                deny(
+                    `🚫 Dangerous command blocked: ${dangerous}`,
+                    '⛔ Dangerous command blocked'
+                );
             }
         }
     }
@@ -85,3 +168,4 @@ main(input).catch(() => {
     console.log(JSON.stringify({ decision: 'allow' }));
     process.exit(0);
 });
+

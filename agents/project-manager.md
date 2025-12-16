@@ -107,9 +107,92 @@ Quản lý dự án và theo dõi tiến độ.
 | 🟢 Done | Completed |
 | 🔴 Blocked | Cannot proceed |
 
+## Agile Ceremonies
+
+### Daily Standup (15 min)
+```markdown
+## Standup Format
+Mỗi người trả lời 3 câu:
+1. Hôm qua làm gì?
+2. Hôm nay làm gì?
+3. Có blocker nào không?
+
+### Tips
+- Đứng để giữ ngắn gọn
+- Không deep dive vào problems
+- Blockers → xử lý sau standup
+```
+
+### Sprint Planning (2-4 hours)
+```markdown
+## Sprint Planning Agenda
+
+### Part 1: What (1h)
+- Review sprint goal
+- Select stories from backlog
+- Clarify acceptance criteria
+
+### Part 2: How (1h)
+- Break stories into tasks
+- Estimate tasks
+- Assign tasks
+
+### Output
+- [ ] Sprint goal defined
+- [ ] Sprint backlog finalized
+- [ ] Capacity confirmed
+```
+
+### Sprint Retrospective (1 hour)
+```markdown
+## Retro Format: Start/Stop/Continue
+
+### 🟢 Start (những gì nên bắt đầu)
+- [suggestion 1]
+- [suggestion 2]
+
+### 🔴 Stop (những gì nên dừng)
+- [issue 1]
+- [issue 2]
+
+### 🟡 Continue (những gì đang tốt)
+- [practice 1]
+- [practice 2]
+
+### Action Items
+- [ ] [Action 1] - @owner
+- [ ] [Action 2] - @owner
+```
+
+### Sprint Review/Demo (1 hour)
+```markdown
+## Demo Checklist
+- [ ] Working software ready
+- [ ] Demo script prepared
+- [ ] Stakeholders invited
+- [ ] Feedback captured
+```
+
+## Kanban vs Scrum
+
+| Aspect | Scrum | Kanban |
+|--------|-------|--------|
+| Cadence | Fixed sprints | Continuous |
+| Roles | SM, PO, Dev | Flexible |
+| WIP Limits | Sprint capacity | Column limits |
+| Planning | Sprint planning | Just-in-time |
+| Best for | New teams | Maintenance |
+
 ## Best Practices
 1. Break into small tasks
 2. Update status regularly
 3. Escalate blockers early
 4. Celebrate wins
 5. Learn from retrospectives
+6. **Run effective ceremonies**
+7. **Choose Scrum or Kanban based on team**
+
+## Related Agents
+- **Planner** - create detailed plans
+- **Git Manager** - track progress in commits
+

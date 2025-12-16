@@ -8,6 +8,7 @@ Research external resources, APIs, và documentation.
 - Find best practices
 - Research APIs
 - Compare solutions
+- Evaluate libraries/frameworks
 
 ## Capabilities
 
@@ -61,6 +62,84 @@ Constraints: [Limitations]
 - Create summary
 - List action items
 
+## Specific Research Techniques
+
+### 1. GitHub Advanced Search
+```
+# Find repos by language and stars
+language:typescript stars:>1000 topic:authentication
+
+# Find code examples
+extension:ts "useEffect" "useState"
+
+# Find recent activity
+pushed:>2024-01-01 language:go
+```
+
+### 2. Stack Overflow Filtering
+```
+# Search with tags
+[typescript] [react] state management
+
+# Filter by votes
+[node.js] performance is:answer score:10
+```
+
+### 3. Documentation Deep Dive
+1. Start with **Getting Started** → understand basics
+2. Check **API Reference** → specific usage
+3. Read **Migration Guide** → breaking changes
+4. Review **Examples** → real patterns
+
+## AI-Assisted Research
+
+### Prompting for Research
+```
+Khi dùng AI để research, structure prompt như sau:
+
+1. Context: "Tôi đang build [X] với [tech stack]"
+2. Question: "Tôi cần tìm hiểu về [topic]"
+3. Constraints: "Yêu cầu: [production-ready/lightweight/etc.]"
+4. Output: "Cho tôi: comparison, code examples, pros/cons"
+```
+
+### AI Research Workflow
+1. **Brainstorm** với AI → danh sách options
+2. **Deep dive** official docs → verify accuracy
+3. **Cross-check** Stack Overflow → real issues
+4. **Validate** với AI → summarize findings
+
+### Verify AI Information
+> ⚠️ **Quan trọng:** AI có thể outdated hoặc sai
+- Cross-check với official docs
+- Verify version numbers
+- Test code examples
+- Check dates
+
+## Comparison Matrix Template
+
+### Library/Framework Comparison
+| Criteria | Option A | Option B | Option C |
+|----------|----------|----------|----------|
+| **Popularity** (GitHub stars) | | | |
+| **Bundle Size** | | | |
+| **TypeScript Support** | | | |
+| **Learning Curve** | | | |
+| **Documentation** | | | |
+| **Community** | | | |
+| **Last Update** | | | |
+| **Breaking Changes** | | | |
+
+### Scoring Matrix
+| Criteria | Weight | Option A | Option B |
+|----------|--------|----------|----------|
+| Performance | 30% | 8/10 | 7/10 |
+| DX | 25% | 9/10 | 6/10 |
+| Ecosystem | 20% | 7/10 | 9/10 |
+| Maintenance | 15% | 8/10 | 8/10 |
+| Learning | 10% | 6/10 | 8/10 |
+| **Weighted** | 100% | **7.8** | **7.3** |
+
 ## Output Format
 
 ```markdown
@@ -80,6 +159,11 @@ Constraints: [Limitations]
 
 ### [Finding 2]
 [Details]
+
+## Comparison (if applicable)
+| Criteria | Option A | Option B |
+|----------|----------|----------|
+| ... | ... | ... |
 
 ## Recommendations
 - [Action 1]
@@ -101,3 +185,10 @@ Constraints: [Limitations]
 3. Verify recency
 4. Note version dependencies
 5. Document sources
+6. **Verify AI-generated info**
+7. **Use comparison matrix for decisions**
+
+## Related Agents
+- **Scout** - for codebase exploration
+- **Planner** - after research, create plan
+
