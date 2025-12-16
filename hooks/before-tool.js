@@ -105,10 +105,13 @@ async function main(input) {
     let data;
     try {
         data = JSON.parse(input);
-    } catch {
-        // If parse fails, allow (fail-open)
-        console.log(JSON.stringify({ decision: 'allow' }));
-        process.exit(0);
+    } catch (error) {
+        // If parse fails, deny (fail-closed for security)
+        deny(
+            `Invalid input format: ${error.message}`,
+            '⛔ Security: Malformed input blocked'
+        );
+        return;
     }
 
     const { tool_name, tool_input } = data;
@@ -164,8 +167,13 @@ const input = await new Promise(resolve => {
     process.stdin.on('end', () => resolve(data));
 });
 
-main(input).catch(() => {
-    console.log(JSON.stringify({ decision: 'allow' }));
-    process.exit(0);
+main(input).catch((error) => {
+    // Fail-closed: deny on any error for security
+    console.log(JSON.stringify({
+        decision: 'deny',
+        reason: `Security check error: ${error.message}`,
+        systemMessage: '⛔ Security: Error during validation'
+    }));
+    process.exit(2);
 });
 

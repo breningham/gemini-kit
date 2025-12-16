@@ -70,11 +70,13 @@ export function safeGh(args: string[], options?: { timeout?: number }): string {
 }
 
 /**
- * Check if a command exists
+ * Check if a command exists (cross-platform)
+ * Uses 'where' on Windows, 'which' on macOS/Linux
  */
 export function commandExists(cmd: string): boolean {
     try {
-        execFileSync('which', [cmd], { encoding: 'utf8', timeout: 5000 });
+        const checkCmd = process.platform === 'win32' ? 'where' : 'which';
+        execFileSync(checkCmd, [cmd], { encoding: 'utf8', timeout: 5000, stdio: 'ignore' });
         return true;
     } catch {
         return false;
