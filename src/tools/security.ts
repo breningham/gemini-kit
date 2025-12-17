@@ -5,6 +5,8 @@
 
 import { execFileSync } from 'child_process';
 import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // FIX: Use os.homedir() for proper cross-platform support
 export const homeDir = os.homedir();
@@ -94,8 +96,6 @@ export function findFiles(
     excludeDirs: string[] = ['node_modules', '.git', 'dist', 'build', 'coverage']
 ): string[] {
     const results: string[] = [];
-    const fs = require('fs');
-    const path = require('path');
 
     function walk(currentDir: string, relativePath: string = '') {
         if (results.length >= maxFiles) return;

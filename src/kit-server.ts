@@ -95,13 +95,13 @@ server.tool(
             if (fs.existsSync(pkgPath)) {
                 try {
                     packageInfo = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-                } catch { }
+                } catch { /* parse error, ignore */ }
             }
 
             let gitLog = '';
             try {
                 gitLog = safeGit(['log', '--oneline', '-5']);
-            } catch { }
+            } catch { /* no git log, ignore */ }
 
             return {
                 content: [{

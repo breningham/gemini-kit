@@ -18,7 +18,7 @@ export function registerIntegrationTools(server: McpServer): void {
             body: z.string().max(65536).describe('PR description/body'),
             base: z.string().regex(/^[a-zA-Z0-9_\-./]+$/).optional().default('main').describe('Base branch'),
             draft: z.boolean().optional().default(false).describe('Create as draft PR'),
-            labels: z.array(z.string().regex(/^[a-zA-Z0-9_\-]+$/)).optional().describe('Labels to add'),
+            labels: z.array(z.string().regex(/^[a-zA-Z0-9_-]+$/)).optional().describe('Labels to add'),
         },
         async ({ title, body, base = 'main', draft = false, labels }) => {
             try {
@@ -110,7 +110,7 @@ ${pr.body || 'No description'}`;
                         try {
                             const diff = safeGh(['pr', 'diff', String(prNumber)]);
                             output += `\n\n### Diff\n\`\`\`diff\n${diff.slice(0, 3000)}${diff.length > 3000 ? '\n... (truncated)' : ''}\n\`\`\``;
-                        } catch { }
+                        } catch { /* diff not available, ignore */ }
                     }
 
                     return { content: [{ type: 'text' as const, text: output }] };

@@ -25,3 +25,4 @@ npm-debug.log*
 # Local folders (not needed)
 gemini-kit-old/
 gemini-cli-source/
+coverage/
