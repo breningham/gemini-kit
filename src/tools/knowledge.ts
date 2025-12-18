@@ -14,7 +14,7 @@ import { z } from 'zod';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Diff from 'diff';
-import { homeDir, findFiles } from './security.js';
+import { homeDir, findFilesAsync } from './security.js';
 
 // Constants
 const LEARNING_START = '<!-- LEARNING_START';
@@ -344,8 +344,8 @@ Your changes would be lost if applied.
                 const indexDir = path.join(homeDir, '.gemini-kit', 'index');
                 fs.mkdirSync(indexDir, { recursive: true });
 
-                // FIX 9.3: Use cross-platform findFiles instead of Unix shell commands
-                const files = findFiles(projectDir, extensions, maxFiles);
+                // MEDIUM 4: Use async file finding to avoid blocking event loop on large repos
+                const files = await findFilesAsync(projectDir, extensions, maxFiles);
 
                 const index: Array<{
                     file: string;
@@ -384,7 +384,10 @@ Your changes would be lost if applied.
                                 .slice(0, 20)
                                 .map(([word]) => word);
 
-                            // FIX 9.4: Enhanced function patterns
+                            // TODO [MEDIUM 5]: These regex patterns are fragile for complex code.
+                            // Future improvement: Use AST parser (tree-sitter or TypeScript compiler API)
+                            // for more reliable function/class detection. Current regex works well for
+                            // simple keyword search but may miss edge cases.
                             const functionPatterns = [
                                 // Standard functions
                                 /(?:async\s+)?function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:<[^>]*>)?\s*\(/g,
