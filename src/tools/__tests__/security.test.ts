@@ -215,3 +215,87 @@ describe('homeDir', () => {
         expect(typeof security.homeDir).toBe('string');
     });
 });
+
+// HIGH 2: Tests for findFilesAsync (untested async utility)
+describe('findFilesAsync', () => {
+    let findFilesAsync: (
+        dir: string,
+        extensions: string[],
+        maxFiles: number,
+        excludeDirs?: string[]
+    ) => Promise<string[]>;
+
+    beforeEach(async () => {
+        const security = await import('../security.js');
+        findFilesAsync = security.findFilesAsync;
+    });
+
+    it('should find TypeScript files asynchronously', async () => {
+        const files = await findFilesAsync(process.cwd(), ['.ts'], 10);
+
+        expect(Array.isArray(files)).toBe(true);
+        expect(files.length).toBeGreaterThan(0);
+        expect(files.every(f => f.endsWith('.ts'))).toBe(true);
+    });
+
+    it('should respect maxFiles limit', async () => {
+        const maxFiles = 5;
+        const files = await findFilesAsync(process.cwd(), ['.ts'], maxFiles);
+
+        expect(files.length).toBeLessThanOrEqual(maxFiles);
+    });
+
+    it('should exclude default directories', async () => {
+        const files = await findFilesAsync(process.cwd(), ['.ts', '.js'], 50);
+
+        // Should not include node_modules or .git
+        expect(files.every(f => !f.includes('node_modules'))).toBe(true);
+        expect(files.every(f => !f.includes('.git'))).toBe(true);
+    });
+
+    it('should support custom exclude directories', async () => {
+        const files = await findFilesAsync(
+            process.cwd(),
+            ['.ts'],
+            50,
+            ['node_modules', '.git', 'dist', 'build', 'coverage', 'src']
+        );
+
+        // Should exclude src directory when specified
+        expect(files.every(f => !f.startsWith('src/'))).toBe(true);
+    });
+
+    it('should handle multiple file extensions', async () => {
+        const files = await findFilesAsync(process.cwd(), ['.ts', '.js', '.json'], 20);
+
+        expect(Array.isArray(files)).toBe(true);
+        const hasTs = files.some(f => f.endsWith('.ts'));
+        const hasJs = files.some(f => f.endsWith('.js'));
+        const hasJson = files.some(f => f.endsWith('.json'));
+
+        // At least one extension should be found
+        expect(hasTs || hasJs || hasJson).toBe(true);
+    });
+
+    it('should return relative paths', async () => {
+        const files = await findFilesAsync(process.cwd(), ['.ts'], 5);
+
+        // Paths should be relative, not absolute
+        expect(files.every(f => !f.startsWith('/'))).toBe(true);
+    });
+
+    it('should handle non-existent directory gracefully', async () => {
+        const files = await findFilesAsync('/non-existent-dir-12345', ['.ts'], 10);
+
+        // Should return empty array instead of throwing
+        expect(Array.isArray(files)).toBe(true);
+        expect(files.length).toBe(0);
+    });
+
+    it('should return empty array when no matching files', async () => {
+        const files = await findFilesAsync(process.cwd(), ['.xyz123'], 10);
+
+        expect(Array.isArray(files)).toBe(true);
+        expect(files.length).toBe(0);
+    });
+});
