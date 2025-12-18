@@ -2,7 +2,6 @@
  * Git Tools Tests
  * Tests for checkpoint and rollback functionality
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest';
 describe('Git Tools', () => {
     describe('checkGitAvailable', () => {

@@ -2,7 +2,6 @@
  * Workflows Tests
  * Tests for workflow definitions and auto-selection
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach } from 'vitest';
 

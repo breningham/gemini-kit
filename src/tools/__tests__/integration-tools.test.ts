@@ -2,7 +2,6 @@
  * Integration Tools Tests - Complete coverage
  * Tests for GitHub, Jira, Slack integrations
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 

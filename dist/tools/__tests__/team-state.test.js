@@ -2,7 +2,6 @@
  * Team State Tests
  * Tests for session management, context, and persistence
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'fs';
 // Mock fs module

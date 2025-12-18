@@ -2,7 +2,6 @@
  * Knowledge Tools Tests
  * Tests for validatePath and learning functions
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as path from 'path';

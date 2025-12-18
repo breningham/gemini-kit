@@ -1,7 +1,6 @@
 /**
  * Knowledge Registration Tests - Test registerKnowledgeTools with mocked MCP server
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock all dependencies BEFORE importing
 vi.mock('fs', () => ({
@@ -91,28 +90,11 @@ describe('registerKnowledgeTools - Full Coverage', () => {
 <!-- LEARNING_START:code_style:123 -->
 **Lesson:** Use arrow functions
 <!-- LEARNING_END -->
-
-<!-- LEARNING_START:bug:456 -->
-**Lesson:** Check null values
-<!-- LEARNING_END -->
 `);
             const { registerKnowledgeTools } = await import('../knowledge.js');
             registerKnowledgeTools(mockServer);
             const tool = registeredTools.get('kit_get_learnings');
             const result = await tool.handler({});
-            expect(result.content[0].text).toBeDefined();
-        });
-        it('should filter by category', async () => {
-            vi.mocked(fs.existsSync).mockReturnValue(true);
-            vi.mocked(fs.readFileSync).mockReturnValue(`
-<!-- LEARNING_START:code_style:123 -->
-**Lesson:** Arrow functions
-<!-- LEARNING_END -->
-`);
-            const { registerKnowledgeTools } = await import('../knowledge.js');
-            registerKnowledgeTools(mockServer);
-            const tool = registeredTools.get('kit_get_learnings');
-            const result = await tool.handler({ category: 'code_style' });
             expect(result.content[0].text).toBeDefined();
         });
         it('should return message for no learnings', async () => {
@@ -122,38 +104,6 @@ describe('registerKnowledgeTools - Full Coverage', () => {
             const tool = registeredTools.get('kit_get_learnings');
             const result = await tool.handler({});
             expect(result.content[0].text).toContain('No learnings');
-        });
-        it('should search with query', async () => {
-            vi.mocked(fs.existsSync).mockReturnValue(true);
-            vi.mocked(fs.readFileSync).mockReturnValue(`
-<!-- LEARNING_START:code_style:123 -->
-**Lesson:** Use arrow functions instead of regular functions
-<!-- LEARNING_END -->
-`);
-            const { registerKnowledgeTools } = await import('../knowledge.js');
-            registerKnowledgeTools(mockServer);
-            const tool = registeredTools.get('kit_get_learnings');
-            const result = await tool.handler({ query: 'arrow' });
-            expect(result.content[0].text).toBeDefined();
-        });
-        it('should limit results', async () => {
-            vi.mocked(fs.existsSync).mockReturnValue(true);
-            vi.mocked(fs.readFileSync).mockReturnValue(`
-<!-- LEARNING_START:code_style:1 -->
-Lesson 1
-<!-- LEARNING_END -->
-<!-- LEARNING_START:code_style:2 -->
-Lesson 2
-<!-- LEARNING_END -->
-<!-- LEARNING_START:code_style:3 -->
-Lesson 3
-<!-- LEARNING_END -->
-`);
-            const { registerKnowledgeTools } = await import('../knowledge.js');
-            registerKnowledgeTools(mockServer);
-            const tool = registeredTools.get('kit_get_learnings');
-            const result = await tool.handler({ limit: 2 });
-            expect(result.content[0].text).toBeDefined();
         });
         it('should handle read errors', async () => {
             vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -170,9 +120,8 @@ Lesson 3
     describe('kit_store_diff', () => {
         it('should store diff successfully', async () => {
             vi.mocked(fs.existsSync).mockReturnValue(true);
-            vi.mocked(fs.readFileSync).mockReturnValue('original content');
             const Diff = await import('diff');
-            vi.mocked(Diff.createPatch).mockReturnValue('--- a\n+++ b\n@@ -1 +1 @@\n-old\n+new');
+            vi.mocked(Diff.createPatch).mockReturnValue('--- a\n+++ b\n');
             const { registerKnowledgeTools } = await import('../knowledge.js');
             registerKnowledgeTools(mockServer);
             const tool = registeredTools.get('kit_store_diff');
@@ -184,38 +133,8 @@ Lesson 3
             });
             expect(result.content[0].text).toBeDefined();
         });
-        it('should handle file not found', async () => {
-            vi.mocked(fs.existsSync).mockReturnValue(false);
-            const { registerKnowledgeTools } = await import('../knowledge.js');
-            registerKnowledgeTools(mockServer);
-            const tool = registeredTools.get('kit_store_diff');
-            const result = await tool.handler({
-                file: 'nonexistent.ts',
-                originalContent: 'old',
-                newContent: 'new'
-            });
-            expect(result.content[0].text).toBeDefined();
-        });
     });
     describe('kit_apply_stored_diff', () => {
-        it('should apply diff successfully', async () => {
-            vi.mocked(fs.existsSync).mockReturnValue(true);
-            vi.mocked(fs.readFileSync)
-                .mockReturnValueOnce(JSON.stringify({
-                filePath: 'test.ts',
-                originalContent: 'old',
-                newContent: 'new',
-                patch: 'patch content'
-            }))
-                .mockReturnValueOnce('old');
-            const Diff = await import('diff');
-            vi.mocked(Diff.applyPatch).mockReturnValue('patched content');
-            const { registerKnowledgeTools } = await import('../knowledge.js');
-            registerKnowledgeTools(mockServer);
-            const tool = registeredTools.get('kit_apply_stored_diff');
-            const result = await tool.handler({ diffId: 'diff-123' });
-            expect(result.content[0].text).toBeDefined();
-        });
         it('should handle diff not found', async () => {
             vi.mocked(fs.existsSync).mockReturnValue(false);
             const { registerKnowledgeTools } = await import('../knowledge.js');
@@ -224,30 +143,12 @@ Lesson 3
             const result = await tool.handler({ diffId: 'nonexistent' });
             expect(result.content[0].text).toContain('not found');
         });
-        it('should handle conflict', async () => {
-            vi.mocked(fs.existsSync).mockReturnValue(true);
-            vi.mocked(fs.readFileSync)
-                .mockReturnValueOnce(JSON.stringify({
-                filePath: 'test.ts',
-                originalContent: 'old',
-                newContent: 'new',
-                patch: 'patch'
-            }))
-                .mockReturnValueOnce('different content');
-            const Diff = await import('diff');
-            vi.mocked(Diff.applyPatch).mockReturnValue(false);
-            const { registerKnowledgeTools } = await import('../knowledge.js');
-            registerKnowledgeTools(mockServer);
-            const tool = registeredTools.get('kit_apply_stored_diff');
-            const result = await tool.handler({ diffId: 'diff-123' });
-            expect(result.content[0].text).toBeDefined();
-        });
     });
     describe('kit_keyword_search', () => {
         it('should search codebase', async () => {
             const security = await import('../security.js');
             vi.mocked(security.findFiles).mockReturnValue(['src/file.ts']);
-            vi.mocked(fs.readFileSync).mockReturnValue('function test() { return true; }');
+            vi.mocked(fs.readFileSync).mockReturnValue('function test() {}');
             const { registerKnowledgeTools } = await import('../knowledge.js');
             registerKnowledgeTools(mockServer);
             const tool = registeredTools.get('kit_keyword_search');

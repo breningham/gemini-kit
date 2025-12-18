@@ -1,7 +1,6 @@
 /**
  * Integration Registration Tests - Test registerIntegrationTools with mocked MCP server
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock child_process
 vi.mock('child_process', () => ({
@@ -55,10 +54,7 @@ describe('registerIntegrationTools - Full Coverage', () => {
             const { registerIntegrationTools } = await import('../integration.js');
             registerIntegrationTools(mockServer);
             const tool = registeredTools.get('kit_github_create_pr');
-            const result = await tool.handler({
-                title: 'Test',
-                body: 'Test'
-            });
+            const result = await tool.handler({ title: 'Test', body: 'Test' });
             expect(result.content[0].text).toBeDefined();
         });
         it('should handle errors', async () => {
@@ -70,10 +66,7 @@ describe('registerIntegrationTools - Full Coverage', () => {
             const { registerIntegrationTools } = await import('../integration.js');
             registerIntegrationTools(mockServer);
             const tool = registeredTools.get('kit_github_create_pr');
-            const result = await tool.handler({
-                title: 'Test',
-                body: 'Test'
-            });
+            const result = await tool.handler({ title: 'Test', body: 'Test' });
             expect(result.content[0].text).toBeDefined();
         });
     });
@@ -81,7 +74,7 @@ describe('registerIntegrationTools - Full Coverage', () => {
         it('should get PR successfully', async () => {
             const security = await import('../security.js');
             vi.mocked(security.commandExists).mockReturnValue(true);
-            vi.mocked(security.safeGh).mockReturnValue('{"number": 123, "title": "Test PR"}');
+            vi.mocked(security.safeGh).mockReturnValue('{"number": 123}');
             const { registerIntegrationTools } = await import('../integration.js');
             registerIntegrationTools(mockServer);
             const tool = registeredTools.get('kit_github_get_pr');
@@ -102,7 +95,7 @@ describe('registerIntegrationTools - Full Coverage', () => {
         it('should get issue successfully', async () => {
             const security = await import('../security.js');
             vi.mocked(security.commandExists).mockReturnValue(true);
-            vi.mocked(security.safeGh).mockReturnValue('{"number": 42, "title": "Bug report"}');
+            vi.mocked(security.safeGh).mockReturnValue('{"number": 42}');
             const { registerIntegrationTools } = await import('../integration.js');
             registerIntegrationTools(mockServer);
             const tool = registeredTools.get('kit_github_get_issue');

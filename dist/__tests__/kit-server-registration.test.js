@@ -1,7 +1,6 @@
 /**
  * Kit Server Registration Tests - Full coverage for main server
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock fs
 vi.mock('fs', () => ({
@@ -18,24 +17,24 @@ vi.mock('path', async () => {
     return { ...actual };
 });
 // Mock security
-vi.mock('./tools/security.js', () => ({
+vi.mock('../tools/security.js', () => ({
     findFiles: vi.fn().mockReturnValue(['index.ts', 'utils.ts']),
     safeGit: vi.fn().mockReturnValue('abc123 commit 1'),
     sanitize: vi.fn((x) => x),
     homeDir: '/tmp/test-home',
 }));
 // Mock tool modules to prevent duplicate registration
-vi.mock('./tools/git.js', () => ({
+vi.mock('../tools/git.js', () => ({
     registerGitTools: vi.fn(),
     checkGitAvailable: vi.fn().mockReturnValue({ available: true, version: 'git 2.40' }),
 }));
-vi.mock('./tools/knowledge.js', () => ({
+vi.mock('../tools/knowledge.js', () => ({
     registerKnowledgeTools: vi.fn(),
 }));
-vi.mock('./tools/integration.js', () => ({
+vi.mock('../tools/integration.js', () => ({
     registerIntegrationTools: vi.fn(),
 }));
-vi.mock('./tools/orchestrator.js', () => ({
+vi.mock('../tools/orchestrator.js', () => ({
     initOrchestrator: vi.fn(),
     teamStart: vi.fn().mockReturnValue({ success: true }),
     teamStatus: vi.fn().mockReturnValue({ hasSession: false }),
@@ -43,7 +42,7 @@ vi.mock('./tools/orchestrator.js', () => ({
     runWorkflow: vi.fn().mockReturnValue({ success: true }),
     smartRoute: vi.fn().mockReturnValue({ workflow: { name: 'cook' } }),
 }));
-vi.mock('./tools/team-state.js', () => ({
+vi.mock('../tools/team-state.js', () => ({
     getSession: vi.fn(),
     startSession: vi.fn(),
     endSession: vi.fn(),

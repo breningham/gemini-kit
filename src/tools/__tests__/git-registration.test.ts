@@ -2,9 +2,23 @@
  * Git Registration Tests - Test registerGitTools with mocked MCP server
  * This tests the actual registration code to achieve full coverage
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Types for mock objects
+interface ToolHandler {
+    (args: Record<string, unknown>): Promise<{ content: Array<{ type: 'text'; text: string }> }>;
+}
+
+interface RegisteredTool {
+    description: string;
+    schema: unknown;
+    handler: ToolHandler;
+}
+
+interface MockMcpServer {
+    tool: ReturnType<typeof vi.fn>;
+}
 
 // Mock all dependencies BEFORE importing the module
 vi.mock('fs', () => ({
@@ -25,17 +39,17 @@ vi.mock('../security.js', () => ({
 }));
 
 describe('registerGitTools - Full Coverage', () => {
-    let mockServer: any;
-    let registeredTools: Map<string, any>;
+    let mockServer: MockMcpServer;
+    let registeredTools: Map<string, RegisteredTool>;
     let safeGit: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
         vi.clearAllMocks();
-        registeredTools = new Map();
+        registeredTools = new Map<string, RegisteredTool>();
 
         // Create mock MCP server
         mockServer = {
-            tool: vi.fn((name: string, description: string, schema: any, handler: any) => {
+            tool: vi.fn((name: string, description: string, schema: unknown, handler: ToolHandler) => {
                 registeredTools.set(name, { description, schema, handler });
             }),
         };
@@ -46,7 +60,7 @@ describe('registerGitTools - Full Coverage', () => {
 
     it('should register all git tools', async () => {
         const { registerGitTools } = await import('../git.js');
-        registerGitTools(mockServer);
+        registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
         expect(registeredTools.has('kit_create_checkpoint')).toBe(true);
         expect(registeredTools.has('kit_restore_checkpoint')).toBe(true);
@@ -57,11 +71,11 @@ describe('registerGitTools - Full Coverage', () => {
     describe('kit_create_checkpoint handler', () => {
         it('should create checkpoint successfully', async () => {
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             safeGit.mockReturnValue('');
             const tool = registeredTools.get('kit_create_checkpoint');
-            const result = await tool.handler({ name: 'test-checkpoint' });
+            const result = await tool!.handler({ name: 'test-checkpoint' });
 
             expect(result.content[0].text).toContain('Checkpoint created');
             expect(safeGit).toHaveBeenCalledWith(['add', '-A']);
@@ -69,14 +83,14 @@ describe('registerGitTools - Full Coverage', () => {
 
         it('should handle git errors', async () => {
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             safeGit.mockImplementation(() => {
                 throw new Error('git failed');
             });
 
             const tool = registeredTools.get('kit_create_checkpoint');
-            const result = await tool.handler({ name: 'test' });
+            const result = await tool!.handler({ name: 'test' });
 
             expect(result.content[0].text).toContain('Error');
         });
@@ -86,13 +100,13 @@ describe('registerGitTools - Full Coverage', () => {
         it('should restore with branch creation', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockReturnValue('');
 
             const tool = registeredTools.get('kit_restore_checkpoint');
-            const result = await tool.handler({
+            const result = await tool!.handler({
                 checkpointId: 'kit-2024-01-01T00-00-00-test',
                 createBranch: true
             });
@@ -103,13 +117,13 @@ describe('registerGitTools - Full Coverage', () => {
         it('should restore without branch (detached HEAD)', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockReturnValue('');
 
             const tool = registeredTools.get('kit_restore_checkpoint');
-            const result = await tool.handler({
+            const result = await tool!.handler({
                 checkpointId: 'kit-2024-01-01T00-00-00-test',
                 createBranch: false
             });
@@ -120,7 +134,7 @@ describe('registerGitTools - Full Coverage', () => {
         it('should handle restore errors', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockImplementation(() => {
@@ -128,7 +142,7 @@ describe('registerGitTools - Full Coverage', () => {
             });
 
             const tool = registeredTools.get('kit_restore_checkpoint');
-            const result = await tool.handler({
+            const result = await tool!.handler({
                 checkpointId: 'kit-2024-01-01T00-00-00-test'
             });
 
@@ -140,13 +154,13 @@ describe('registerGitTools - Full Coverage', () => {
         it('should list checkpoints', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockReturnValue('kit-tag-1\nkit-tag-2\n');
 
             const tool = registeredTools.get('kit_list_checkpoints');
-            const result = await tool.handler({});
+            const result = await tool!.handler({});
 
             expect(result.content[0].text).toContain('kit-tag-1');
         });
@@ -154,13 +168,13 @@ describe('registerGitTools - Full Coverage', () => {
         it('should handle no checkpoints', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockReturnValue('');
 
             const tool = registeredTools.get('kit_list_checkpoints');
-            const result = await tool.handler({});
+            const result = await tool!.handler({});
 
             expect(result.content[0].text).toContain('No checkpoints');
         });
@@ -168,7 +182,7 @@ describe('registerGitTools - Full Coverage', () => {
         it('should handle git errors', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockImplementation(() => {
@@ -176,7 +190,7 @@ describe('registerGitTools - Full Coverage', () => {
             });
 
             const tool = registeredTools.get('kit_list_checkpoints');
-            const result = await tool.handler({});
+            const result = await tool!.handler({});
 
             expect(result.content[0].text).toContain('Error');
         });
@@ -186,13 +200,13 @@ describe('registerGitTools - Full Coverage', () => {
         it('should rollback with specific checkpoint', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockReturnValue('');
 
             const tool = registeredTools.get('kit_auto_rollback');
-            const result = await tool.handler({
+            const result = await tool!.handler({
                 reason: 'test failed',
                 checkpointId: 'kit-2024-01-01T00-00-00-test'
             });
@@ -203,7 +217,7 @@ describe('registerGitTools - Full Coverage', () => {
         it('should find latest checkpoint when none specified', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit)
@@ -211,7 +225,7 @@ describe('registerGitTools - Full Coverage', () => {
                 .mockReturnValue('');
 
             const tool = registeredTools.get('kit_auto_rollback');
-            const result = await tool.handler({ reason: 'auto rollback' });
+            const result = await tool!.handler({ reason: 'auto rollback' });
 
             expect(result.content[0].text).toContain('kit-latest-tag');
         });
@@ -219,13 +233,13 @@ describe('registerGitTools - Full Coverage', () => {
         it('should handle no checkpoints found', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit).mockReturnValue('');
 
             const tool = registeredTools.get('kit_auto_rollback');
-            const result = await tool.handler({ reason: 'test' });
+            const result = await tool!.handler({ reason: 'test' });
 
             expect(result.content[0].text).toContain('No checkpoint');
         });
@@ -233,7 +247,7 @@ describe('registerGitTools - Full Coverage', () => {
         it('should handle rollback failure', async () => {
             vi.resetModules();
             const { registerGitTools } = await import('../git.js');
-            registerGitTools(mockServer);
+            registerGitTools(mockServer as unknown as Parameters<typeof registerGitTools>[0]);
 
             const security = await import('../security.js');
             vi.mocked(security.safeGit)
@@ -243,7 +257,7 @@ describe('registerGitTools - Full Coverage', () => {
                 });
 
             const tool = registeredTools.get('kit_auto_rollback');
-            const result = await tool.handler({ reason: 'test' });
+            const result = await tool!.handler({ reason: 'test' });
 
             expect(result.content[0].text).toContain('failed');
         });

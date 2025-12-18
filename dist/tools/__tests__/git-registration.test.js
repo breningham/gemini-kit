@@ -2,7 +2,6 @@
  * Git Registration Tests - Test registerGitTools with mocked MCP server
  * This tests the actual registration code to achieve full coverage
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock all dependencies BEFORE importing the module
 vi.mock('fs', () => ({

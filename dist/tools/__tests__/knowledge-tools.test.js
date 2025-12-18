@@ -2,7 +2,6 @@
  * Knowledge Tools Tests - Complete coverage
  * Tests for learning, diff, and search functionality
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs';
 // Mock fs
