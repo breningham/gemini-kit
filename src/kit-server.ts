@@ -26,6 +26,8 @@ import {
     runWorkflow,
     smartRoute,
     getSessionHistory,
+    getNextStep,
+    advanceStep,
 } from './tools/orchestrator.js';
 
 import { listWorkflows } from './tools/workflows.js';
@@ -253,6 +255,81 @@ ${sessions.map(s => `- **${s.name}** (${s.status})
             };
         } catch (error) {
             return { content: [{ type: 'text' as const, text: `Error getting history: ${error}` }] };
+        }
+    }
+);
+
+// TOOL: Get Next Step (Dynamic Context Propagation)
+server.tool(
+    'kit_get_next_step',
+    'Get the prompt for the current workflow step with latest context. Each step receives results from previous steps.',
+    {},
+    async () => {
+        try {
+            const result = getNextStep();
+
+            if (result.completed) {
+                return {
+                    content: [{
+                        type: 'text' as const,
+                        text: '🎉 **Workflow Completed!**\n\nAll steps have been executed successfully.',
+                    }],
+                };
+            }
+
+            if (!result.step) {
+                return {
+                    content: [{
+                        type: 'text' as const,
+                        text: result.prompt,
+                    }],
+                };
+            }
+
+            return {
+                content: [{
+                    type: 'text' as const,
+                    text: `## Step ${result.stepIndex + 1}: ${result.step.agent}\n\n${result.prompt}\n\n---\n*${result.remainingSteps} steps remaining. Use \`kit_complete_step\` when done.*`,
+                }],
+            };
+        } catch (error) {
+            return { content: [{ type: 'text' as const, text: `Error getting next step: ${error}` }] };
+        }
+    }
+);
+
+// TOOL: Complete Step (Pass Context to Next Step)
+server.tool(
+    'kit_complete_step',
+    'Mark current step as complete and pass results to next step. The next step will have access to this output.',
+    {
+        result: z.string().describe('Summary of what was accomplished in this step'),
+        output: z.string().optional().describe('Key findings or data to pass to the next step'),
+    },
+    async ({ result, output }) => {
+        try {
+            const stepOutput = output || result;
+            const advanceResult = advanceStep(stepOutput);
+
+            if (!advanceResult.advanced) {
+                return {
+                    content: [{
+                        type: 'text' as const,
+                        text: advanceResult.message,
+                    }],
+                };
+            }
+
+            const nextStepInfo = getNextStep();
+
+            return {
+                content: [{
+                    type: 'text' as const,
+                    text: `${advanceResult.message}\n\n${nextStepInfo.step ? `**Next: ${nextStepInfo.step.agent}** - Use \`kit_get_next_step\` to see the prompt.` : ''}`,
+                }],
+            };
+        } catch (error) {
+            return { content: [{ type: 'text' as const, text: `Error completing step: ${error}` }] };
         }
     }
 );

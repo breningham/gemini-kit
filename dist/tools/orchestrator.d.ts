@@ -56,6 +56,28 @@ export declare function runWorkflow(workflowName: string, task: string): {
         step: WorkflowStep;
         prompt: string;
     }>;
+    currentStep: number;
+    message: string;
+};
+/**
+ * Get the next step prompt with CURRENT context (just-in-time generation)
+ * This ensures each step receives context from previous steps
+ */
+export declare function getNextStep(): {
+    hasMore: boolean;
+    stepIndex: number;
+    step: WorkflowStep | null;
+    prompt: string;
+    remainingSteps: number;
+    completed: boolean;
+};
+/**
+ * Advance to next step after completing current step
+ * Saves step result to context for next step to use
+ */
+export declare function advanceStep(stepResult: string): {
+    advanced: boolean;
+    nextStepIndex: number;
     message: string;
 };
 /**

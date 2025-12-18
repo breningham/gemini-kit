@@ -321,3 +321,35 @@ export function getSessionSummary(): string {
 ${currentSession.agents.map(a => `- **${a.agent}**: ${a.status} (${a.duration || 0}ms)`).join('\n')}
 `.trim();
 }
+
+// ═══════════════════════════════════════════════════════════════
+// GRACEFUL SHUTDOWN HANDLERS
+// Prevent data loss on unexpected process termination
+// ═══════════════════════════════════════════════════════════════
+
+function gracefulShutdown(): void {
+    if (currentSession) {
+        try {
+            saveSessionSync();
+            console.log('[gemini-kit] Session saved on exit');
+        } catch (_e) {
+            // Best effort save on exit
+        }
+    }
+}
+
+// Handle various termination signals
+process.on('beforeExit', gracefulShutdown);
+process.on('SIGINT', () => {
+    gracefulShutdown();
+    process.exit(0);
+});
+process.on('SIGTERM', () => {
+    gracefulShutdown();
+    process.exit(0);
+});
+process.on('uncaughtException', (error) => {
+    console.error('[gemini-kit] Uncaught exception, saving session...', error);
+    gracefulShutdown();
+    process.exit(1);
+});

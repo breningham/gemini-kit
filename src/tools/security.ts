@@ -34,17 +34,21 @@ function extractStderr(error: unknown): string {
     return '';
 }
 
+// Configurable timeouts via environment variables
+const GIT_TIMEOUT = parseInt(process.env.GEMINI_KIT_GIT_TIMEOUT || '30000', 10);
+const GH_TIMEOUT = parseInt(process.env.GEMINI_KIT_GH_TIMEOUT || '60000', 10);
+
 /**
  * Safe git command execution using execFileSync
  * Includes stderr in error message for better debugging
  * 
- * @param timeout Default 30s (increased for large repos). Override with options.timeout
+ * @param timeout Default from GEMINI_KIT_GIT_TIMEOUT env var or 30s
  */
 export function safeGit(args: string[], options?: { cwd?: string; timeout?: number }): string {
     try {
         return execFileSync('git', args, {
             encoding: 'utf8',
-            timeout: options?.timeout || 30000, // MEDIUM 5: Increased from 10s to 30s
+            timeout: options?.timeout || GIT_TIMEOUT,
             cwd: options?.cwd,
             maxBuffer: 10 * 1024 * 1024, // 10MB
         });
@@ -59,13 +63,13 @@ export function safeGit(args: string[], options?: { cwd?: string; timeout?: numb
  * Safe gh (GitHub CLI) command execution
  * Includes stderr in error message for better debugging
  * 
- * @param timeout Default 60s (increased for API operations). Override with options.timeout
+ * @param timeout Default from GEMINI_KIT_GH_TIMEOUT env var or 60s
  */
 export function safeGh(args: string[], options?: { timeout?: number }): string {
     try {
         return execFileSync('gh', args, {
             encoding: 'utf8',
-            timeout: options?.timeout || 60000, // MEDIUM 5: Increased from 30s to 60s
+            timeout: options?.timeout || GH_TIMEOUT,
             maxBuffer: 10 * 1024 * 1024,
         });
     } catch (error) {
