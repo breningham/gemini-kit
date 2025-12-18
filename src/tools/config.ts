@@ -54,8 +54,9 @@ export function loadProjectSettings(projectDir: string): ProjectSettings {
     if (fs.existsSync(settingsPath)) {
         try {
             return JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-        } catch {
-            // Return empty on parse error
+        } catch (error) {
+            // Log warning for debugging bad config files
+            console.warn(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error);
         }
     }
 

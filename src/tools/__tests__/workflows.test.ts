@@ -4,13 +4,14 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import type { Workflow, WorkflowStep } from '../workflows.js';
 
 describe('WORKFLOWS', () => {
-    let WORKFLOWS: Record<string, any>;
-    let getWorkflow: (name: string) => any;
+    let WORKFLOWS: Record<string, Workflow>;
+    let getWorkflow: (name: string) => Workflow | undefined;
     let listWorkflows: () => Array<{ name: string; description: string }>;
-    let autoSelectWorkflow: (task: string) => any;
-    let getStepPrompt: (step: any, task: string, context: Record<string, unknown>) => string;
+    let autoSelectWorkflow: (task: string) => Workflow;
+    let getStepPrompt: (step: WorkflowStep, task: string, context: Record<string, unknown>) => string;
 
     beforeEach(async () => {
         const workflows = await import('../workflows.js');
@@ -35,7 +36,7 @@ describe('WORKFLOWS', () => {
 
         it('should have required steps marked correctly', () => {
             const cookSteps = WORKFLOWS.cook.steps;
-            const requiredSteps = cookSteps.filter((s: any) => s.required);
+            const requiredSteps = cookSteps.filter((s: WorkflowStep) => s.required);
             expect(requiredSteps.length).toBeGreaterThan(0);
         });
 
@@ -44,7 +45,7 @@ describe('WORKFLOWS', () => {
                 expect(workflow).toHaveProperty('name');
                 expect(workflow).toHaveProperty('description');
                 expect(workflow).toHaveProperty('steps');
-                expect(Array.isArray((workflow as any).steps)).toBe(true);
+                expect(Array.isArray((workflow as Workflow).steps)).toBe(true);
             }
         });
     });

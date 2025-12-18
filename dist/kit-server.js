@@ -22200,7 +22200,8 @@ function loadProjectSettings(projectDir) {
   if (fs4.existsSync(settingsPath)) {
     try {
       return JSON.parse(fs4.readFileSync(settingsPath, "utf-8"));
-    } catch {
+    } catch (error2) {
+      console.warn(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error2);
     }
   }
   return {};

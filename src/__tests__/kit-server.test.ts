@@ -277,60 +277,63 @@ describe('Kit Server - kit_save_artifact', () => {
 });
 
 describe('Kit Server - Team Tools Integration', () => {
-    let orchestrator: any;
-
     beforeEach(async () => {
         vi.clearAllMocks();
-        orchestrator = await import('../tools/orchestrator.js');
     });
 
-    it('should call teamStart when kit_team_start is invoked', () => {
+    it('should call teamStart when kit_team_start is invoked', async () => {
+        const orchestrator = await import('../tools/orchestrator.js');
         vi.mocked(orchestrator.teamStart).mockReturnValue({
             success: true,
             session: { id: 'test-123' }
-        });
+        } as ReturnType<typeof orchestrator.teamStart>);
 
         const result = orchestrator.teamStart('Build feature');
         expect(result.success).toBe(true);
     });
 
-    it('should call teamStatus when kit_team_status is invoked', () => {
+    it('should call teamStatus when kit_team_status is invoked', async () => {
+        const orchestrator = await import('../tools/orchestrator.js');
         vi.mocked(orchestrator.teamStatus).mockReturnValue({
             hasSession: true,
             session: { id: 'test-123', status: 'active' }
-        });
+        } as ReturnType<typeof orchestrator.teamStatus>);
 
         const result = orchestrator.teamStatus();
         expect(result.hasSession).toBe(true);
     });
 
-    it('should call teamEnd when kit_team_end is invoked', () => {
+    it('should call teamEnd when kit_team_end is invoked', async () => {
+        const orchestrator = await import('../tools/orchestrator.js');
         vi.mocked(orchestrator.teamEnd).mockReturnValue({
             success: true,
             session: { status: 'completed' }
-        });
+        } as ReturnType<typeof orchestrator.teamEnd>);
 
         const result = orchestrator.teamEnd('completed');
         expect(result.success).toBe(true);
     });
 
-    it('should call runWorkflow when kit_run_workflow is invoked', () => {
+    it('should call runWorkflow when kit_run_workflow is invoked', async () => {
+        const orchestrator = await import('../tools/orchestrator.js');
         vi.mocked(orchestrator.runWorkflow).mockReturnValue({
             success: true,
             workflow: { name: 'cook' }
-        });
+        } as ReturnType<typeof orchestrator.runWorkflow>);
 
         const result = orchestrator.runWorkflow('cook', 'Build feature');
         expect(result.success).toBe(true);
     });
 
-    it('should call smartRoute when kit_smart_route is invoked', () => {
+    it('should call smartRoute when kit_smart_route is invoked', async () => {
+        const orchestrator = await import('../tools/orchestrator.js');
         vi.mocked(orchestrator.smartRoute).mockReturnValue({
             workflow: { name: 'quickfix' },
             confidence: 0.9
-        });
+        } as ReturnType<typeof orchestrator.smartRoute>);
 
         const result = orchestrator.smartRoute('fix this bug');
         expect(result.confidence).toBeGreaterThan(0.5);
     });
 });
+
