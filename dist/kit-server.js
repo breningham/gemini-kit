@@ -20817,7 +20817,7 @@ import * as fs from "fs";
 import * as path from "path";
 var homeDir = os.homedir();
 function sanitize(input) {
-  return String(input).replace(/[;&|`$<>\\!#*?]/g, "").trim().slice(0, 500);
+  return String(input).replace(/[;&|`$<>\\]/g, "").trim().slice(0, 500);
 }
 function validatePath(filePath, baseDir = process.cwd()) {
   const resolved = path.resolve(baseDir, filePath);

@@ -4,9 +4,9 @@
  */
 export declare const homeDir: string;
 /**
- * Sanitize string for safe use in shell commands
- * MEDIUM 1 FIX: Relaxed to allow () and [] which are valid in commit messages/paths
- * Note: execFileSync is already safe, this is extra protection for edge cases
+ * Sanitize string for safe use with execFileSync
+ * Only removes dangerous shell operators - safe chars like !?#* are allowed
+ * since execFileSync doesn't invoke a shell
  */
 export declare function sanitize(input: string): string;
 /**

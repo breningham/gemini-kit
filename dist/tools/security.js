@@ -9,14 +9,15 @@ import * as path from 'path';
 // Cross-platform home directory
 export const homeDir = os.homedir();
 /**
- * Sanitize string for safe use in shell commands
- * MEDIUM 1 FIX: Relaxed to allow () and [] which are valid in commit messages/paths
- * Note: execFileSync is already safe, this is extra protection for edge cases
+ * Sanitize string for safe use with execFileSync
+ * Only removes dangerous shell operators - safe chars like !?#* are allowed
+ * since execFileSync doesn't invoke a shell
  */
 export function sanitize(input) {
-    // Only remove dangerous shell operators, keep () and [] for valid workflows
+    // Only remove truly dangerous shell operators
+    // Keep: ! ? # * ( ) [ ] { } for valid commit messages like "Fix bug!"
     return String(input)
-        .replace(/[;&|`$<>\\!#*?]/g, '')
+        .replace(/[;&|`$<>\\]/g, '')
         .trim()
         .slice(0, 500); // Limit length
 }
