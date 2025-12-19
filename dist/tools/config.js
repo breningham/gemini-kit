@@ -44,7 +44,7 @@ export function loadProjectSettings(projectDir) {
         }
         catch (error) {
             // Log warning for debugging bad config files
-            console.warn(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error);
+            console.error(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error);
         }
     }
     return {};

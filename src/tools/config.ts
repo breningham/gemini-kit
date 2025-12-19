@@ -56,7 +56,7 @@ export function loadProjectSettings(projectDir: string): ProjectSettings {
             return JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
         } catch (error) {
             // Log warning for debugging bad config files
-            console.warn(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error);
+            console.error(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error);
         }
     }
 

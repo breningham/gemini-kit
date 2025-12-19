@@ -305,7 +305,7 @@ Your changes would be lost if applied.
                             };
                         }
                         // Force mode - log warning but proceed
-                        console.warn(`[kit_apply_stored_diff] Force applying diff ${diffId} despite conflict`);
+                        console.error(`[kit_apply_stored_diff] Force applying diff ${diffId} despite conflict`);
                     }
                 }
 

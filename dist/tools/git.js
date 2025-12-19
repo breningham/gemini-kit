@@ -32,8 +32,8 @@ export function checkGitAvailable() {
 // Check git on module load and warn if not available
 const gitStatus = checkGitAvailable();
 if (!gitStatus.available) {
-    console.warn(`⚠️ ${gitStatus.error}`);
-    console.warn('Git-related tools will not work until Git is installed.');
+    console.error(`[gemini-kit] ${gitStatus.error}`);
+    console.error('[gemini-kit] Git-related tools will not work until Git is installed.');
 }
 export function registerGitTools(server) {
     // TOOL 1: CREATE CHECKPOINT

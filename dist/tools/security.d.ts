@@ -7,6 +7,7 @@ export declare const homeDir: string;
  * Sanitize string for safe use with execFileSync
  * Only removes dangerous shell operators - safe chars like !?#* are allowed
  * since execFileSync doesn't invoke a shell
+ * HIGH 1 FIX: Also handles flag injection (inputs starting with -)
  */
 export declare function sanitize(input: string): string;
 /**

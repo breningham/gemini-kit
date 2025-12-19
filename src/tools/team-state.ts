@@ -122,7 +122,7 @@ export function initTeamState(customConfig?: Partial<TeamStateConfig>): void {
         const recoveredSession = recoverActiveSession();
         if (recoveredSession) {
             currentSession = recoveredSession;
-            console.log(`✅ Recovered active session: ${recoveredSession.id}`);
+            console.error(`[gemini-kit] Recovered active session: ${recoveredSession.id}`);
         }
     }
 }
@@ -354,7 +354,7 @@ export function loadSession(sessionId: string): TeamSession | null {
     const data = fs.readFileSync(filePath, 'utf-8');
     const parsed = TeamSessionSchema.safeParse(JSON.parse(data));
     if (!parsed.success) {
-        console.warn(`[gemini-kit] Invalid session format: ${sessionId}`);
+        console.error(`[gemini-kit] Invalid session format: ${sessionId}`);
         return null;
     }
     currentSession = parsed.data;
@@ -377,12 +377,12 @@ export function listSessions(): TeamSession[] {
             const data = fs.readFileSync(path.join(config.sessionDir, file), 'utf-8');
             const parsed = TeamSessionSchema.safeParse(JSON.parse(data));
             if (!parsed.success) {
-                console.warn(`[gemini-kit] Invalid session format: ${file}`);
+                console.error(`[gemini-kit] Invalid session format: ${file}`);
                 return null;
             }
             return parsed.data;
         } catch {
-            console.warn(`[gemini-kit] Skipping corrupted session file: ${file}`);
+            console.error(`[gemini-kit] Skipping corrupted session file: ${file}`);
             return null;
         }
     })
@@ -429,7 +429,7 @@ function gracefulShutdown(): void {
     if (currentSession) {
         try {
             saveSessionSync();
-            console.log('[gemini-kit] Session saved on exit');
+            console.error('[gemini-kit] Session saved on exit');
         } catch (_e) {
             // Best effort save on exit
         }

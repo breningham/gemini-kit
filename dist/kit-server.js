@@ -20817,7 +20817,11 @@ import * as fs from "fs";
 import * as path from "path";
 var homeDir = os.homedir();
 function sanitize(input) {
-  return String(input).replace(/[;&|`$<>\\]/g, "").trim().slice(0, 500);
+  let result = String(input).replace(/[;&|`$<>\\]/g, "").trim().slice(0, 500);
+  if (result.startsWith("-")) {
+    result = `-- ${result}`;
+  }
+  return result;
 }
 function validatePath(filePath, baseDir = process.cwd()) {
   const resolved = path.resolve(baseDir, filePath);
@@ -20950,8 +20954,8 @@ function checkGitAvailable() {
 }
 var gitStatus = checkGitAvailable();
 if (!gitStatus.available) {
-  console.warn(`\u26A0\uFE0F ${gitStatus.error}`);
-  console.warn("Git-related tools will not work until Git is installed.");
+  console.error(`[gemini-kit] ${gitStatus.error}`);
+  console.error("[gemini-kit] Git-related tools will not work until Git is installed.");
 }
 function registerGitTools(server2) {
   server2.tool(
@@ -21779,7 +21783,7 @@ Your changes would be lost if applied.
                 }]
               };
             }
-            console.warn(`[kit_apply_stored_diff] Force applying diff ${diffId} despite conflict`);
+            console.error(`[kit_apply_stored_diff] Force applying diff ${diffId} despite conflict`);
           }
         }
         fs3.writeFileSync(diffData.file, diffData.newContent);
@@ -22308,7 +22312,7 @@ function loadProjectSettings(projectDir) {
     try {
       return JSON.parse(fs4.readFileSync(settingsPath, "utf-8"));
     } catch (error2) {
-      console.warn(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error2);
+      console.error(`[gemini-kit] Warning: Failed to parse ${settingsPath}:`, error2);
     }
   }
   return {};
@@ -22500,7 +22504,7 @@ function initTeamState(customConfig) {
     const recoveredSession = recoverActiveSession();
     if (recoveredSession) {
       currentSession = recoveredSession;
-      console.log(`\u2705 Recovered active session: ${recoveredSession.id}`);
+      console.error(`[gemini-kit] Recovered active session: ${recoveredSession.id}`);
     }
   }
 }
@@ -22620,12 +22624,12 @@ function listSessions() {
       const data = fs6.readFileSync(path6.join(config2.sessionDir, file), "utf-8");
       const parsed = TeamSessionSchema.safeParse(JSON.parse(data));
       if (!parsed.success) {
-        console.warn(`[gemini-kit] Invalid session format: ${file}`);
+        console.error(`[gemini-kit] Invalid session format: ${file}`);
         return null;
       }
       return parsed.data;
     } catch {
-      console.warn(`[gemini-kit] Skipping corrupted session file: ${file}`);
+      console.error(`[gemini-kit] Skipping corrupted session file: ${file}`);
       return null;
     }
   }).filter((s) => s !== null).sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
@@ -22655,7 +22659,7 @@ function gracefulShutdown() {
   if (currentSession) {
     try {
       saveSessionSync();
-      console.log("[gemini-kit] Session saved on exit");
+      console.error("[gemini-kit] Session saved on exit");
     } catch (_e) {
     }
   }

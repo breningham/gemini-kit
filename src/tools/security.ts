@@ -15,14 +15,23 @@ export const homeDir = os.homedir();
  * Sanitize string for safe use with execFileSync
  * Only removes dangerous shell operators - safe chars like !?#* are allowed
  * since execFileSync doesn't invoke a shell
+ * HIGH 1 FIX: Also handles flag injection (inputs starting with -)
  */
 export function sanitize(input: string): string {
     // Only remove truly dangerous shell operators
     // Keep: ! ? # * ( ) [ ] { } for valid commit messages like "Fix bug!"
-    return String(input)
+    let result = String(input)
         .replace(/[;&|`$<>\\]/g, '')
         .trim()
         .slice(0, 500); // Limit length
+
+    // HIGH 1 FIX: Prevent flag injection by prepending -- for inputs starting with -
+    // This tells git to treat the following as a literal value, not a flag
+    if (result.startsWith('-')) {
+        result = `-- ${result}`;
+    }
+
+    return result;
 }
 
 /**
