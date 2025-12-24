@@ -1,0 +1,41 @@
+description = "Interactive project setup wizard - tạo context files cho project mới"
+
+prompt = """
+# 🚀 Kit Setup Wizard
+
+Xin chào! Đây là wizard để setup project context cho Gemini-Kit.
+
+## Tôi sẽ giúp bạn tạo 3 files context:
+
+1. **product.md** - Mô tả sản phẩm, users, goals
+2. **tech-stack.md** - Language, framework, database
+3. **guidelines.md** - Code style, commit conventions
+
+---
+
+## Bước 1: Product Context
+
+Hãy cho tôi biết về project của bạn:
+
+**Câu hỏi:**
+1. Bạn đang build gì? (Một dòng mô tả)
+2. Ai là users chính? (Developers, End users, Enterprises, etc.)
+3. Mục tiêu chính của sản phẩm là gì?
+4. Có những features chính nào?
+
+---
+
+Khi bạn trả lời xong, tôi sẽ:
+1. Tạo file `.gemini-kit/product.md`
+2. Hỏi tiếp về Tech Stack
+3. Hỏi tiếp về Guidelines
+4. Hoàn thành setup!
+
+**Bạn có thể trả lời tự do hoặc theo format:**
+```
+Product: [mô tả]
+Users: [ai sử dụng]
+Goals: [mục tiêu]
+Features: [tính năng chính]
+```
+"""

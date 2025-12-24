@@ -1,0 +1,23 @@
+description = "Xem tiến độ project - specs, plans, todos, và compound health"
+
+prompt = """
+# 📊 Project Status
+
+Đang load status...
+
+{{shell ./scripts/status-dashboard.sh}}
+
+---
+
+## Quick Actions
+
+| Action | Command |
+|--------|---------|
+| Xem chi tiết specs | `ls docs/specs/` |
+| Xem chi tiết plans | `ls plans/` |
+| Xem chi tiết todos | `ls todos/` |
+| Compound health | `./scripts/compound-dashboard.sh` |
+| Housekeeping | `/housekeeping` |
+
+Bạn cần làm gì tiếp?
+"""

@@ -34,6 +34,18 @@
 
 ---
 
+## 📖 Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [🚀 Quick Start](QUICKSTART.md) | Bắt đầu trong 5 phút |
+| [📚 Features Reference](docs/FEATURES.md) | Tất cả features chi tiết |
+| [🔄 Workflows Guide](docs/WORKFLOWS.md) | Hướng dẫn workflows |
+| [🎯 Best Practices](docs/BEST-PRACTICES.md) | Tips và troubleshooting |
+| [📡 API Reference](docs/API.md) | MCP tools API |
+
+---
+
 ## 🤔 What is Gemini-Kit?
 
 **Gemini-Kit** is an extension for Gemini CLI that transforms your terminal into a **virtual engineering office** with 15 specialized AI agents:
