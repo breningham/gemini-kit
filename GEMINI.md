@@ -100,3 +100,61 @@ Khi user nói: "Luôn dùng TypeScript strict mode"
 - Update README.md khi add features
 - Update CHANGELOG.md trước release
 - Keep docs in sync với code changes
+
+## 🔄 Compound Behaviors (QUAN TRỌNG!)
+
+Mỗi unit công việc phải làm công việc tiếp theo **dễ hơn**, không khó hơn.
+
+### Session Resume (BẮT BUỘC)
+
+Khi bắt đầu session mới, **PHẢI** đọc:
+```bash
+cat skills/session-resume/SKILL.md
+```
+
+### Search Before Solving
+
+**TRƯỚC KHI** giải quyết vấn đề mới:
+```bash
+./scripts/compound-search.sh "{keywords}"
+```
+
+Nếu tìm thấy solution → Áp dụng, không reinvent the wheel!
+
+### Document After Solving
+
+**SAU KHI** giải quyết vấn đề thành công:
+- Chạy `/compound` để document solution
+- Solution sẽ được lưu vào `docs/solutions/`
+
+### Critical Patterns
+
+**PHẢI** đọc trước khi code:
+- `docs/solutions/patterns/critical-patterns.md` - 23 patterns chống lỗi lặp lại
+
+### Health Check
+
+Mỗi ngày chạy:
+```bash
+./scripts/compound-dashboard.sh
+```
+**Target**: Grade B hoặc cao hơn
+
+### Compound Loop
+
+```
+/explore → /plan → /work → /review → /compound → /housekeeping → repeat
+```
+
+## Important Directories
+
+```
+docs/solutions/       # Knowledge Base - Persistent solutions
+docs/decisions/       # Architecture Decision Records
+docs/architecture/    # System architecture
+docs/specs/           # Multi-session specifications
+docs/explorations/    # Deep research artifacts
+skills/               # Modular capabilities
+plans/                # Implementation plans
+todos/                # Tracked work items
+```
