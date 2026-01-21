@@ -106,6 +106,17 @@ Create      Find relevant   Implement    Write &      Code review
 plan        files           solution     run tests   & quality
 ```
 
+### 🔄 Compound Loop (Advanced)
+
+```
+/explore → /plan → /work → /review → /compound → /housekeeping
+    │                                      │
+    │                                      ▼
+    └─────────────── Knowledge compounds ──┘
+```
+
+Each iteration → Knowledge accumulates → Next iteration is easier!
+
 ---
 
 ## 💎 Benefits
