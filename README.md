@@ -193,42 +193,122 @@ Skills are loaded automatically based on context and agent configuration.
 
 ## ⌨️ Commands
 
-### Core Workflow
+### 🔄 Core Workflow (Compound Loop)
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `/explore` | Research before doing | `/explore React Server Components` |
-| `/plan` | Create detailed plan | `/plan Add user authentication` |
-| `/work` | Execute plan | `/work` (after plan exists) |
-| `/review` | Code review | `/review src/api/auth.ts` |
-| `/compound` | Document knowledge | `/compound` (after solving problem) |
-| `/housekeeping` | Cleanup before push | `/housekeeping` |
+| `/explore` | Research before implementing | `/explore JWT authentication best practices` |
+| `/plan` | Create detailed implementation plan | `/plan Add user authentication with JWT` |
+| `/work` | Execute plan step by step | `/work` |
+| `/review` | Code review with multi-pass analysis | `/review src/api/auth.ts` |
+| `/compound` | Document solution for future use | `/compound` |
+| `/housekeeping` | Cleanup before git push | `/housekeeping` |
+| `/cycle` | Run full workflow cycle | `/cycle Add payment integration` |
 
-### Development
+### 💻 Development
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/code` | Write code for a task | `/code Create UserService class` |
+| `/code-preview` | Preview code before applying | `/code-preview` |
+| `/cook` | Full development cycle (plan→code→test→review) | `/cook Add login feature` |
+| `/debug` | Debug issues with root cause analysis | `/debug Why API returns 500?` |
+| `/fix` | Quick fix for errors | `/fix ESLint errors in src/utils` |
+| `/test` | Write and run tests | `/test Write tests for UserService` |
+| `/fullstack` | End-to-end feature development | `/fullstack Build user dashboard` |
+
+### 📚 Documentation & Content
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/doc` | Update folder documentation | `/doc src/services` |
+| `/docs` | Generate documentation | `/docs Create API reference` |
+| `/adr` | Create Architecture Decision Record | `/adr Use PostgreSQL over MySQL` |
+| `/changelog` | Generate changelog from commits | `/changelog` |
+| `/content` | Create content (tutorials, guides) | `/content Write auth tutorial` |
+| `/copywrite` | Marketing copy | `/copywrite Landing page hero text` |
+| `/journal` | Development journal | `/journal` |
+
+### 🔀 Git & PR
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/git` | Git operations | `/git commit "feat: add auth"` |
+| `/pr` | Create Pull Request | `/pr Create PR for feature` |
+| `/review-pr` | Review Pull Request | `/review-pr 123` |
+
+### 🔍 Exploration & Research
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/scout` | Explore codebase structure | `/scout src/services` |
+| `/scout-ext` | Extended scout with dependencies | `/scout-ext` |
+| `/research` | Research technologies | `/research Compare React vs Vue` |
+| `/brainstorm` | Brainstorm ideas | `/brainstorm Authentication approaches` |
+
+### 🎨 Design & UI
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/design` | UI/UX design guidance | `/design Create dashboard layout` |
+| `/video` | Video content planning | `/video` |
+| `/screenshot` | Screenshot annotation | `/screenshot` |
+
+### 🗄️ Database & Integration
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/db` | Database operations | `/db Design user schema` |
+| `/integrate` | Integration planning | `/integrate Stripe payment` |
+| `/ticket` | Get ticket details (Jira/Linear) | `/ticket ABC-123` |
+
+### 🛠️ Project Management
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/pm` | Project management | `/pm Sprint planning` |
+| `/project` | Project overview | `/project` |
+| `/status` | Show project status | `/status` |
+| `/kit-setup` | Initialize project context | `/kit-setup` |
+
+### ⚡ Workflows (Advanced)
 
 | Command | Description |
 |---------|-------------|
-| `/debug` | Debug issues |
-| `/test` | Write and run tests |
-| `/fix` | Quick fix |
-| `/code` | Implement code |
+| `/specs` | Create multi-session specifications |
+| `/plan-compound` | Create plan with solution search |
+| `/review-compound` | Multi-pass code review |
+| `/triage` | Triage review findings |
+| `/triage-sprint` | Batch process pending todos |
+| `/resolve_todo` | Resolve multiple todos |
+| `/resolve_pr` | Handle PR comments |
+| `/report-bug` | Report bugs with reproduction steps |
+| `/reproduce-bug` | Reproduce reported bugs |
+| `/promote_pattern` | Promote issue to critical pattern |
+| `/compound_health` | Check compound system health |
+| `/heal-skill` | Fix broken skills |
+| `/skill-review` | Review potential new skills |
+| `/create-agent-skill` | Create new agent skill |
+| `/generate_command` | Create new workflow command |
+| `/deploy-docs` | Deploy documentation |
+| `/release-docs` | Prepare release documentation |
+| `/xcode-test` | Run Xcode tests (iOS) |
 
-### Documentation
+### 🔧 Utilities
 
 | Command | Description |
 |---------|-------------|
-| `/doc` | Update documentation |
-| `/adr` | Create Architecture Decision Record |
-| `/changelog` | Generate changelog |
-
-### Utilities
-
-| Command | Description |
-|---------|-------------|
-| `/status` | Show project status |
-| `/help` | Show help |
-| `/kit-setup` | Initialize project context |
-| `/cycle` | Full workflow cycle |
+| `/help` | Show all commands |
+| `/ask` | Quick Q&A |
+| `/chat` | Free chat |
+| `/do` | Execute task |
+| `/use` | Use specific agent |
+| `/session` | Manage session |
+| `/team` | Team orchestration |
+| `/workflow` | Run specific workflow |
+| `/mcp` | MCP tool operations |
+| `/skill` | View/manage skills |
+| `/watzup` | Quick status check |
 
 ---
 

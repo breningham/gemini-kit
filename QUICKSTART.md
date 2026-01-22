@@ -70,7 +70,7 @@ gemini
 /housekeeping → Cleanup, then git push!
 ```
 
-### Top 5 Commands
+### Top 10 Commands
 
 | Command | What it does | When to use |
 |---------|--------------|-------------|
@@ -78,7 +78,55 @@ gemini
 | `/explore [topic]` | Research before implementing | Before new feature |
 | `/plan [description]` | Create implementation plan | Before coding |
 | `/work` | Execute plan step by step | When plan exists |
+| `/cook [task]` | Full cycle (plan→code→test→review) | Quick tasks |
+| `/debug [issue]` | Debug with root cause analysis | Runtime errors |
+| `/test [file]` | Write and run tests | Quality assurance |
+| `/review [file]` | Code review | Before merging |
+| `/scout [path]` | Explore codebase | New projects |
 | `/housekeeping` | Cleanup before push | Before git push |
+
+### Development Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/code [task]` | Write code |
+| `/fix [error]` | Quick fix |
+| `/fullstack [feature]` | End-to-end development |
+| `/db [task]` | Database operations |
+
+### Documentation Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/doc [path]` | Update folder docs |
+| `/docs [task]` | Generate documentation |
+| `/adr [decision]` | Architecture Decision Record |
+| `/changelog` | Generate changelog |
+
+### Git Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/git [action]` | Git operations |
+| `/pr [description]` | Create Pull Request |
+| `/review-pr [number]` | Review Pull Request |
+
+### Research & Design
+
+| Command | Purpose |
+|---------|---------|
+| `/research [topic]` | Research technologies |
+| `/brainstorm [topic]` | Brainstorm ideas |
+| `/design [ui]` | UI/UX design |
+
+### Utilities
+
+| Command | Purpose |
+|---------|---------|
+| `/help` | Show all commands |
+| `/ask [question]` | Quick Q&A |
+| `/kit-setup` | Initialize project |
+| `/skill` | View/manage skills |
 
 ---
 
