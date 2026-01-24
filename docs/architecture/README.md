@@ -2,11 +2,23 @@
 
 System architecture documentation for Gemini-Kit.
 
-## Documents
+## Purpose
 
-| Document | Description |
-|----------|-------------|
-| [Compound System](compound-system.md) | Knowledge compounding and learning system |
+Document high-level system design, component interactions, and architectural decisions for the Gemini-Kit project. These documents serve as the authoritative source for understanding how the system works.
+
+## Components
+
+| Document | Description | Status |
+|----------|-------------|--------|
+| [compound-system.md](compound-system.md) | Knowledge compounding and learning system | ✅ Active |
+
+## Component Details
+
+### 🔴 Critical: `compound-system.md`
+Documents the Compound Engineering system that enables knowledge persistence across sessions.
+- **Purpose**: How learnings, solutions, and patterns are captured and reused
+- **Key Concepts**: Solution documents, critical patterns, search-before-solve
+- **Related ADRs**: Knowledge base structure decisions
 
 ## Adding New Architecture Docs
 
@@ -22,3 +34,11 @@ When documenting significant architectural decisions or systems:
 - **ADRs**: `docs/decisions/` - Architecture Decision Records
 - **Patterns**: `docs/solutions/patterns/` - Critical patterns
 - **Specs**: `docs/specs/` - Multi-session specifications
+
+## Changelog
+
+### 2026-01-24
+- Added Purpose, Component Details, and Changelog sections
+
+### 2024-12-24
+- Initial architecture documentation structure

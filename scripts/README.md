@@ -61,6 +61,34 @@ Automation scripts for compound engineering workflows, knowledge management, and
 - **`update-spec-phase.sh`**: Manages specification lifecycles.
 - **`next-todo-id.sh`**: Generates unique IDs for todos.
 
+## Component Details
+
+### 🔴 Critical Scripts
+
+| Script | Purpose | Error Handling |
+|--------|---------|----------------|
+| `compound-search.sh` | Context-aware solution search | Returns empty if no matches |
+| `pre-push-housekeeping.sh` | Pre-push validation | Blocks push on critical errors |
+| `create-todo.sh` | Standardized todo creation | Validates priority levels |
+
+### 🟡 Supporting Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `log-workflow.sh` | Workflow telemetry |
+| `log-skill.sh` | Skill usage tracking |
+| `generate-changelog.js` | Changelog generation from commits |
+| `bootstrap-folder-docs.sh` | README scaffolding |
+| `discover-undocumented-folders.sh` | Find folders missing docs |
+| `validate-folder-docs.sh` | Validate README structure |
+
+### 🟢 Generated/Automated
+
+| Script | Purpose |
+|--------|---------|
+| `rotate-logs.sh` | Log file management |
+| `archive-completed.sh` | Move completed work to archives |
+
 ## Usage
 
 Most scripts are designed to be run via the agent workflows (e.g. `/work`, `/housekeeping`), but can be run manually for debugging.
@@ -70,6 +98,10 @@ Most scripts are designed to be run via the agent workflows (e.g. `/work`, `/hou
 ```
 
 ## Changelog
+
+### 2026-01-24
+- Added Component Details section with tiered script documentation
+- Added missing `generate-changelog.js` entry
 
 ### 2024-12-24
 - Integrated from Antigravity Compound Engineering Plugin

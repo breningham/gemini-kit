@@ -3,6 +3,42 @@
 > **Quick Start:** New to this project? Read [critical-patterns.md](../docs/solutions/patterns/critical-patterns.md) first.
 > **Technical Architecture:** For the complete system architecture, see [docs/architecture/compound-system.md](../docs/architecture/compound-system.md).
 
+## Purpose
+
+This directory contains workflow definitions that orchestrate the agent's compound engineering process. Workflows provide structured, repeatable sequences for planning, implementing, reviewing, and documenting work.
+
+## Components
+
+| Category | Workflows | Description |
+|----------|-----------|-------------|
+| Core Loop | 8 | `/explore`, `/specs`, `/plan`, `/plan_review`, `/work`, `/review`, `/compound`, `/housekeeping` |
+| Todo/Triage | 2 | `/triage`, `/resolve_todo` |
+| Code Review | 2 | `/resolve_pr`, `/plan_review` |
+| Release | 3 | `/changelog`, `/release-docs`, `/deploy-docs` |
+| Debugging | 2 | `/report-bug`, `/reproduce-bug` |
+| Skills | 3 | `/create-agent-skill`, `/heal-skill`, `/generate_command` |
+| Maintenance | 2 | `/housekeeping`, `/compound_health` |
+
+## Component Details
+
+### 🔴 Critical Workflows
+
+| Workflow | Purpose | When to Use |
+|----------|---------|-------------|
+| `plan.md` | Create implementation plans | Before significant work |
+| `work.md` | Execute plans systematically | During implementation |
+| `review-compound.md` | Multi-pass code review | After work complete |
+| `compound.md` | Capture knowledge for reuse | After solving problems |
+
+### 🟡 Supporting Workflows
+
+| Workflow | Purpose |
+|----------|---------|
+| `explore.md` | Deep investigation before planning |
+| `specs.md` | Multi-session specifications |
+| `housekeeping.md` | Pre-push cleanup and validation |
+| `triage.md` | Prioritize pending work items |
+
 ## Core Loop
 
 ```
@@ -98,7 +134,7 @@ grep -r "{keywords}" docs/solutions/
 cat docs/solutions/patterns/critical-patterns.md
 ```
 
-### 2. Check Pending Work
+### 3. Check Pending Work
 
 ```bash
 # Any active specs?
@@ -144,4 +180,12 @@ docs/specs/           # Multi-session specifications
 
 ---
 
-*Last updated: 2025-12-20*
+## Changelog
+
+### 2026-01-24
+- Added Purpose, Components, and Component Details sections
+- Restructured for documentation validation compliance
+
+### 2025-12-20
+- Added modular skills section
+- Updated core loop documentation

@@ -37,6 +37,9 @@ Standard templates for documenting problems and explorations.
 
 ## Changelog
 
+### 2026-01-24
+- Updated documentation structure for validation compliance
+
 ### 2024-12-24
 - Integrated from Antigravity Compound Engineering Plugin
 - Added 23 critical patterns
