@@ -1,6 +1,6 @@
 description = "Manage documentation with modes and templates (Docs Manager Agent)"
 
-prompt = """
+prompt = '''
 # 📚 DOCS MANAGER AGENT
 
 Documentation task:
@@ -137,7 +137,7 @@ git add docs/ && git commit -m "docs: update for auth"
 ```
 
 > **Key Takeaway:** Keep docs synchronized with code. Run after every feature, validate weekly.
-"""
+'''
 
 # ---
 # USAGE:
