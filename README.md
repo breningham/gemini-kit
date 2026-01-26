@@ -5,12 +5,14 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/nth5693/gemini-kit/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-291%20passed-brightgreen.svg)]()
-[![Agents](https://img.shields.io/badge/AI%20Agents-19-purple.svg)]()
+[![Agents](https://img.shields.io/badge/AI%20Agents-27-purple.svg)]()
 [![Skills](https://img.shields.io/badge/Skills-15-orange.svg)]()
+[![Commands](https://img.shields.io/badge/Commands-45-yellow.svg)]()
+[![Workflows](https://img.shields.io/badge/Workflows-33-cyan.svg)]()
 
 ### 🎯 Transform Your Terminal into an AI Engineering Team
 
-**Gemini-Kit** is an extension for [Gemini CLI](https://github.com/google-gemini/gemini-cli) that brings **19 specialized AI agents** and **15 skill modules** to help you code 10x faster.
+**Gemini-Kit** is an extension for [Gemini CLI](https://github.com/google-gemini/gemini-cli) that brings **27 specialized AI agents**, **45 commands**, and **33 workflows** to help you code 10x faster.
 
 [🚀 Quick Start](#-quick-start) • [🤖 Agents](#-agents) • [🛠️ Skills](#️-skills) • [⌨️ Commands](#️-commands) • [📚 API](docs/API.md)
 
@@ -37,17 +39,22 @@
 
 | Feature | Count | Description |
 |---------|-------|-------------|
-| 🤖 **AI Agents** | 19 | Specialized roles (Security, Frontend, Backend, DevOps...) |
+| 🤖 **AI Agents** | 27 | Specialized roles (Security, Frontend, Backend, DevOps...) |
 | 🛠️ **Skills** | 15 | Knowledge modules (React, Next.js, Docker, Security...) |
-| ⌨️ **Commands** | 33+ | Slash commands for every workflow |
+| ⌨️ **Commands** | 45 | Slash commands for every workflow |
+| 🔄 **Workflows** | 33 | Structured development workflows |
 | 🔒 **Security** | 30+ | Secret detection patterns |
+| 📜 **Scripts** | 50+ | Automation scripts |
 
 ### Key Features
 
-- **Compound Loop**: `/explore → /plan → /work → /review → /compound` - Each iteration builds knowledge
-- **Learning System**: AI learns from your feedback
-- **Auto-checkpoint**: Automatic backup before changes
-- **Security Hooks**: Block secret leaks (30+ patterns)
+- **🔄 Compound System**: `/explore → /plan → /work → /review → /compound` - Each iteration builds a Knowledge Base. Solutions are saved and reused!
+- **🧠 Learning System**: AI learns from your feedback. Correct once, it remembers forever
+- **📚 23 Critical Patterns**: Common mistakes documented as patterns - AI reads them before coding
+- **🎯 Multi-agent Orchestration**: Orchestrator coordinates multiple agents for complex tasks
+- **💾 Auto-checkpoint**: Automatic Git backup before changes
+- **🔒 Security Hooks**: Real-time blocking of secrets (30+ patterns)
+- **📢 Notifications**: Discord & Telegram integration
 
 ---
 
@@ -101,7 +108,7 @@ git pull && npm install && npm run build
 
 ## 🤖 Agents
 
-### 19 Specialized AI Agents
+### 27 Specialized AI Agents
 
 #### Core Development (5)
 
@@ -113,7 +120,7 @@ git pull && npm install && npm run build
 | 🧪 **Tester** | Write & run tests | Quality assurance |
 | 👀 **Reviewer** | Code review | Before merging PRs |
 
-#### Specialists (8) - NEW in v4.0
+#### Specialists (12) - NEW in v4.0
 
 | Agent | Role | When to Use |
 |-------|------|-------------|
@@ -125,8 +132,12 @@ git pull && npm install && npm run build
 | 🗄️ **Database Admin** | Schema, migrations | Database work |
 | 🎨 **UI Designer** | Design, animations | UI/UX |
 | 🌐 **Fullstack** | End-to-end | Full features |
+| 📱 **Mobile Developer** | React Native, Flutter | Mobile apps |
+| 🎮 **Game Developer** | Unity, Godot | Game development |
+| ⚡ **Performance Optimizer** | Core Web Vitals, profiling | Performance issues |
+| 🔓 **Penetration Tester** | Security testing | Pentest |
 
-#### Support (6)
+#### Support & Management (6)
 
 | Agent | Role | When to Use |
 |-------|------|-------------|
@@ -136,6 +147,15 @@ git pull && npm install && npm run build
 | 💡 **Brainstormer** | Ideas | Problem solving |
 | 📊 **Project Manager** | Sprint planning | Project management |
 | ✍️ **Copywriter** | Marketing copy | Content |
+
+#### Specialized (4)
+
+| Agent | Role | When to Use |
+|-------|------|-------------|
+| 🎯 **Orchestrator** | Multi-agent coordination | Complex tasks |
+| 🏺 **Code Archaeologist** | Legacy code analysis | Refactoring old code |
+| 👤 **Product Owner** | Requirements, backlog | Product decisions |
+| 📈 **SEO Specialist** | SEO/GEO optimization | SEO work |
 
 ### How to Use Agents
 
@@ -348,18 +368,41 @@ Skills are loaded automatically based on context and agent configuration.
 
 ### Secret Detection (30+ patterns)
 
-- ✅ AWS Access Keys, Secrets
-- ✅ GitHub, GitLab Tokens
-- ✅ OpenAI, Anthropic API Keys
-- ✅ Private Keys (RSA, SSH)
-- ✅ Database Connection Strings
-- ✅ JWT Secrets
+Real-time blocking BEFORE AI writes code:
+
+| Category | Patterns |
+|----------|----------|
+| Cloud | AWS Access Keys, AWS Secrets |
+| Code Hosting | GitHub PAT, GitLab Tokens, npm tokens |
+| AI Providers | OpenAI, Anthropic, Google API Keys |
+| Auth | Bearer tokens, JWT secrets |
+| Keys | RSA, SSH, EC Private Keys |
+| Database | MongoDB, PostgreSQL, MySQL connection strings |
+| Communication | Slack tokens, webhooks |
 
 ### Command Blocking
 
-- 🚫 `rm -rf /`
-- 🚫 Fork bombs
-- 🚫 Pipe to shell (`curl | sh`)
+- 🚫 `rm -rf /`, `rm -rf ~`, `rm -rf *`
+- 🚫 Fork bombs (`:(){:|:&};:`)
+- 🚫 Pipe to shell (`curl | sh`, `wget | bash`)
+- 🚫 Dangerous disk operations (`dd if=`, `mkfs.`)
+
+### Path Traversal Protection
+
+- 🚫 `../` path traversal
+- 🚫 `/etc/passwd`, `/etc/shadow`
+- 🚫 `~/.ssh/` files
+- 🚫 `.env`, `.pem`, `.key` files
+
+---
+
+## 📢 Notifications
+
+| Integration | Description |
+|-------------|-------------|
+| 💬 **Discord** | Webhook notifications |
+| ✉️ **Telegram** | Bot notifications |
+| 🔔 **Session Hooks** | Before/After agent actions |
 
 ---
 
@@ -385,9 +428,11 @@ Configure **Gemini CLI** with your Google account. No separate API key needed.
 |--------|-------|
 | Tests | 291 passing |
 | Lint | 0 errors |
-| Agents | 19 |
+| Agents | 27 |
 | Skills | 15 categories |
-| Commands | 33+ |
+| Commands | 45 |
+| Workflows | 33 |
+| Scripts | 50+ |
 | Coverage | ~81% |
 
 ---
